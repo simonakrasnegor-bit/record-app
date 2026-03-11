@@ -47,7 +47,7 @@ const GENRES = ["Rock","Pop","Hip-Hop","Jazz","Electronic","Alternative","Indie"
 const APP_NAME = "Record";
 const APP_TAGLINE = "Every show, pressed to memory.";
 const APP_SUBTITLE = "A Live Music Journal for You & Your Friends";
-const CONTACT_EMAIL = "hello@recordapp.com";
+const CONTACT_EMAIL = "record.concertlog@gmail.com";
 const LAST_UPDATED = "March 2026";
 
 const fmtDate = (d) => {
@@ -606,12 +606,3 @@ export default function App() {
     </div>
   );
 }
-```
-
----
-
-**To update your site:** go to GitHub → `src/App.js` → pencil icon ✏️ → **Ctrl+A** → **Ctrl+V** → scroll down → **Commit changes** twice. Done!
-
-**One thing to update before sharing publicly** — find this line near the top and replace the email with your real one:
-```
-const CONTACT_EMAIL = "hello@recordapp.com";
