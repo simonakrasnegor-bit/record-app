@@ -8,8 +8,8 @@ import { createClient } from "@supabase/supabase-js";
 //   REACT_APP_SUPABASE_ANON_KEY=your-anon-public-key
 // ─────────────────────────────────────────────────────────────────────────────
 const supabase = createClient(
-  "https://yhawkpdhjwzzffunorjm.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InloYXdrcGRoand6emZmdW5vcmptIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxNjg3MDQsImV4cCI6MjA4ODc0NDcwNH0.8C407bilajhjIf7vYvdeoSsciwtVPOrOcPNgWJg2Bjk"
+  process.env.REACT_APP_SUPABASE_URL,
+  process.env.REACT_APP_SUPABASE_TOKEN
 );
 
 // ─────────────────────────────────────────────────────────────────────────────
