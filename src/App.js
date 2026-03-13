@@ -156,34 +156,70 @@ const MediaStrip = ({ media, onAdd, onRemove }) => {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// AUTH MODAL
+// AUTH MODAL  (email OR username login)
 // ─────────────────────────────────────────────────────────────────────────────
 const AuthModal = ({ onClose, onAuth }) => {
-  const [mode, setMode]       = useState("login"); // "login" | "signup"
-  const [email, setEmail]     = useState("");
-  const [password, setPassword] = useState("");
-  const [username, setUsername] = useState("");
-  const [error, setError]     = useState("");
-  const [loading, setLoading] = useState(false);
+  const [mode, setMode]           = useState("login"); // "login" | "signup"
+  const [identifier, setIdentifier] = useState("");   // email or username on login
+  const [email, setEmail]         = useState("");      // signup only
+  const [password, setPassword]   = useState("");
+  const [username, setUsername]   = useState("");
+  const [displayName, setDisplayName] = useState("");
+  const [error, setError]         = useState("");
+  const [loading, setLoading]     = useState(false);
+
+  // Resolve username → email for login
+  const resolveEmail = async (input) => {
+    // If it looks like an email just return it
+    if (input.includes("@")) return input.trim();
+    // Otherwise look up by username
+    const handle = input.replace(/^@/, "").trim().toLowerCase();
+    const { data } = await supabase
+      .from("profiles")
+      .select("id")
+      .eq("username", handle)
+      .single();
+    if (!data) throw new Error("No account found with that username.");
+    // Get the email from auth — we need to use a server-side lookup trick:
+    // store email in profiles table on signup so we can resolve it here
+    const { data: prof } = await supabase
+      .from("profiles")
+      .select("email")
+      .eq("username", handle)
+      .single();
+    if (!prof?.email) throw new Error("No account found with that username.");
+    return prof.email;
+  };
 
   const handleSubmit = async () => {
     setError(""); setLoading(true);
     try {
       if (mode === "signup") {
-        const { data, error: e } = await supabase.auth.signUp({ email, password });
+        if (!username.trim()) throw new Error("Username is required.");
+        if (!email.trim())    throw new Error("Email is required.");
+        // Check username not taken
+        const { data: existing } = await supabase
+          .from("profiles")
+          .select("id")
+          .eq("username", username.trim().toLowerCase())
+          .single();
+        if (existing) throw new Error("That username is already taken.");
+
+        const { data, error: e } = await supabase.auth.signUp({ email: email.trim(), password });
         if (e) throw e;
         if (data.user) {
-          // Create profile row
           await supabase.from("profiles").insert({
-            id: data.user.id,
-            username: username || email.split("@")[0],
-            display_name: username || email.split("@")[0],
+            id:           data.user.id,
+            username:     username.trim().toLowerCase(),
+            display_name: displayName.trim() || username.trim(),
             avatar_emoji: "🎵",
+            email:        email.trim(),
           });
           onAuth(data.user);
         }
       } else {
-        const { data, error: e } = await supabase.auth.signInWithPassword({ email, password });
+        const resolvedEmail = await resolveEmail(identifier);
+        const { data, error: e } = await supabase.auth.signInWithPassword({ email: resolvedEmail, password });
         if (e) throw e;
         onAuth(data.user);
       }
@@ -203,26 +239,45 @@ const AuthModal = ({ onClose, onAuth }) => {
             {mode === "login" ? "Welcome Back" : "Join the Collection"}
           </h2>
           <p style={{ color: T.stamp, fontSize: "12px", fontFamily: "'Outfit', sans-serif", marginTop: "6px", fontStyle: "italic" }}>
-            {mode === "login" ? "Sign in to your record collection." : "Start pressing your live music memories."}
+            {mode === "login" ? "Sign in with your email or @username." : "Start pressing your live music memories."}
           </p>
         </div>
 
         <div style={{ display: "grid", gap: "16px" }}>
-          {mode === "signup" && (
+          {mode === "signup" ? (
+            <>
+              <div>
+                <label style={S.label}>Username *</label>
+                <div style={{ position: "relative" }}>
+                  <span style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", color: T.groove, fontFamily: "'Outfit', sans-serif", fontSize: "14px" }}>@</span>
+                  <input style={{ ...S.input, paddingLeft: "26px" }} value={username} onChange={e => setUsername(e.target.value.replace(/\s/g, ""))} placeholder="yourhandle" />
+                </div>
+                <div style={{ color: T.groove, fontSize: "10px", fontFamily: "'Outfit', sans-serif", marginTop: "4px" }}>Searchable by other users. Lowercase, no spaces.</div>
+              </div>
+              <div>
+                <label style={S.label}>Display Name</label>
+                <input style={S.input} value={displayName} onChange={e => setDisplayName(e.target.value)} placeholder="e.g. Maya Chen (optional)" />
+              </div>
+              <div>
+                <label style={S.label}>Email *</label>
+                <input type="email" style={S.input} value={email} onChange={e => setEmail(e.target.value)} placeholder="you@example.com" />
+              </div>
+            </>
+          ) : (
             <div>
-              <label style={S.label}>Display Name</label>
-              <input style={S.input} value={username} onChange={e => setUsername(e.target.value)} placeholder="e.g. Maya Chen" />
+              <label style={S.label}>Email or @Username</label>
+              <input style={S.input} value={identifier} onChange={e => setIdentifier(e.target.value)} placeholder="you@example.com or @handle" autoFocus />
             </div>
           )}
-          <div>
-            <label style={S.label}>Email</label>
-            <input type="email" style={S.input} value={email} onChange={e => setEmail(e.target.value)} placeholder="you@example.com" />
-          </div>
           <div>
             <label style={S.label}>Password</label>
             <input type="password" style={S.input} value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" onKeyDown={e => e.key === "Enter" && handleSubmit()} />
           </div>
-          {error && <div style={{ background: "#fde8e8", border: `1px solid ${T.red}`, borderRadius: "3px", padding: "10px 14px", color: T.red, fontSize: "12px", fontFamily: "'Outfit', sans-serif" }}>{error}</div>}
+          {error && (
+            <div style={{ background: "#fde8e8", border: `1px solid ${T.red}`, borderRadius: "3px", padding: "10px 14px", color: T.red, fontSize: "12px", fontFamily: "'Outfit', sans-serif" }}>
+              {error}
+            </div>
+          )}
         </div>
 
         <button onClick={handleSubmit} disabled={loading}
@@ -572,44 +627,104 @@ const FindUsersModal = ({ onClose, users, onToggleFollow, onViewProfile }) => {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// GLOBAL SEARCH RESULTS PANEL
+// GLOBAL SEARCH RESULTS PANEL  (concerts + users)
 // ─────────────────────────────────────────────────────────────────────────────
-const GlobalSearchPanel = ({ query, allConcerts, onOpen, onClose }) => {
+const GlobalSearchPanel = ({ query, allConcerts, allUsers, onOpenConcert, onOpenProfile, onToggleFollow, onClose }) => {
   if (!query.trim()) return null;
-  const q = query.toLowerCase();
-  const results = allConcerts.filter(c =>
+  const q = query.toLowerCase().replace(/^@/, "");
+
+  const concertResults = allConcerts.filter(c =>
     [c.artist, c.venue, c.city, c.genre].some(x => (x||"").toLowerCase().includes(q))
   );
+  const userResults = allUsers.filter(u =>
+    (u.username||"").toLowerCase().includes(q) ||
+    (u.display_name||"").toLowerCase().includes(q)
+  );
+
+  const total = concertResults.length + userResults.length;
+
   return (
-    <div style={{ position: "absolute", top: "100%", left: 0, right: 0, zIndex: 100, background: T.cream, border: `2px solid ${T.inkLight}`, borderTop: "none", borderRadius: "0 0 4px 4px", boxShadow: `4px 6px 0 ${T.groove}`, maxHeight: "360px", overflowY: "auto" }}>
-      <div style={{ padding: "10px 16px", borderBottom: `1px solid ${T.groove}`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+    <div style={{ position: "absolute", top: "100%", left: 0, right: 0, zIndex: 100, background: T.cream, border: `2px solid ${T.inkLight}`, borderTop: "none", borderRadius: "0 0 4px 4px", boxShadow: `4px 6px 0 ${T.groove}`, maxHeight: "420px", overflowY: "auto" }}>
+      {/* Header */}
+      <div style={{ padding: "10px 16px", borderBottom: `1px solid ${T.groove}`, display: "flex", justifyContent: "space-between", alignItems: "center", position: "sticky", top: 0, background: T.cream, zIndex: 1 }}>
         <span style={{ color: T.stamp, fontSize: "10px", letterSpacing: "2px", textTransform: "uppercase", fontFamily: "'Outfit', sans-serif" }}>
-          {results.length} result{results.length !== 1 ? "s" : ""} for "{query}"
+          {total} result{total !== 1 ? "s" : ""} for "{query}"
         </span>
         <button onClick={onClose} style={{ background: "none", border: "none", color: T.groove, cursor: "pointer", fontSize: "11px", fontFamily: "'Outfit', sans-serif" }}>✕ Close</button>
       </div>
-      {results.length === 0 ? (
+
+      {total === 0 ? (
         <div style={{ padding: "24px", textAlign: "center", color: T.groove, fontFamily: "'Outfit', sans-serif", fontSize: "13px", fontStyle: "italic" }}>
-          Nothing in the collection matches.
+          Nothing found — try a different search.
         </div>
       ) : (
         <div style={{ padding: "8px" }}>
-          {results.map((c, i) => (
-            <div key={c.id} onClick={() => { onOpen(c); onClose(); }}
-              style={{ display: "flex", alignItems: "center", gap: "12px", padding: "10px 12px", borderRadius: "3px", cursor: "pointer", borderBottom: i < results.length - 1 ? `1px solid ${T.grooveLt}` : "none" }}
-              onMouseEnter={e => e.currentTarget.style.background = T.accentPale}
-              onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
-              <div style={{ background: T.ink, color: T.accent, borderRadius: "2px", padding: "4px 8px", fontFamily: "'Fraunces', serif", fontSize: "11px", minWidth: "36px", textAlign: "center", lineHeight: 1.2 }}>
-                <div style={{ fontSize: "9px" }}>{fmtDate(c.date).month}</div>
-                <div style={{ fontWeight: "900", fontSize: "14px" }}>{fmtDate(c.date).day}</div>
+
+          {/* ── Users section ── */}
+          {userResults.length > 0 && (
+            <>
+              <div style={{ padding: "6px 12px 4px", color: T.stamp, fontSize: "9px", letterSpacing: "2.5px", textTransform: "uppercase", fontFamily: "'Outfit', sans-serif" }}>
+                ♫ Listeners
               </div>
-              <div style={{ flex: 1 }}>
-                <div style={{ color: T.ink, fontFamily: "'Fraunces', serif", fontSize: "15px", fontWeight: "700" }}>{c.artist}</div>
-                <div style={{ color: T.stamp, fontSize: "11px", fontFamily: "'Outfit', sans-serif" }}>{[c.venue, c.city].filter(Boolean).join(" · ")}</div>
+              {userResults.map(u => (
+                <div key={u.id}
+                  style={{ display: "flex", alignItems: "center", gap: "12px", padding: "10px 12px", borderRadius: "3px", borderBottom: `1px solid ${T.grooveLt}` }}>
+                  {/* Avatar + name — clickable to open profile */}
+                  <div style={{ display: "flex", alignItems: "center", gap: "10px", flex: 1, cursor: "pointer" }}
+                    onClick={() => { onOpenProfile(u); onClose(); }}>
+                    <div style={{ fontSize: "22px", background: T.paper, border: `1px solid ${T.groove}`, borderRadius: "50%", width: 36, height: 36, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                      {u.avatar_emoji || "🎵"}
+                    </div>
+                    <div>
+                      <div style={{ color: T.ink, fontFamily: "'Fraunces', serif", fontSize: "15px", fontWeight: "700", lineHeight: 1.2 }}>{u.display_name || u.username}</div>
+                      <div style={{ color: T.stamp, fontSize: "11px", fontFamily: "'Outfit', sans-serif" }}>
+                        @{u.username} · {u.concerts?.length || 0} shows
+                        <span style={{ color: T.accent, marginLeft: "6px" }}><Sym>▶</Sym> View profile</span>
+                      </div>
+                    </div>
+                  </div>
+                  {/* Inline follow button */}
+                  <button
+                    onClick={e => { e.stopPropagation(); onToggleFollow(u.id); }}
+                    style={{
+                      background: u.following ? "transparent" : T.ink,
+                      border: u.following ? `1.5px solid ${T.groove}` : "none",
+                      color: u.following ? T.stamp : T.cream,
+                      borderRadius: "2px", padding: "6px 14px", cursor: "pointer",
+                      fontSize: "10px", fontWeight: "700", fontFamily: "'Outfit', sans-serif",
+                      letterSpacing: "1px", whiteSpace: "nowrap", transition: "all .2s",
+                    }}>
+                    {u.following ? <><Sym>■</Sym> Unfollow</> : <><Sym>▶</Sym> Follow</>}
+                  </button>
+                </div>
+              ))}
+            </>
+          )}
+
+          {/* ── Concerts section ── */}
+          {concertResults.length > 0 && (
+            <>
+              <div style={{ padding: "10px 12px 4px", color: T.stamp, fontSize: "9px", letterSpacing: "2.5px", textTransform: "uppercase", fontFamily: "'Outfit', sans-serif" }}>
+                ♪ Shows
               </div>
-              {c.genre && <GenreSticker genre={c.genre} />}
-            </div>
-          ))}
+              {concertResults.map((c, i) => (
+                <div key={c.id} onClick={() => { onOpenConcert(c); onClose(); }}
+                  style={{ display: "flex", alignItems: "center", gap: "12px", padding: "10px 12px", borderRadius: "3px", cursor: "pointer", borderBottom: i < concertResults.length - 1 ? `1px solid ${T.grooveLt}` : "none" }}
+                  onMouseEnter={e => e.currentTarget.style.background = T.accentPale}
+                  onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
+                  <div style={{ background: T.ink, color: T.accent, borderRadius: "2px", padding: "4px 8px", fontFamily: "'Fraunces', serif", fontSize: "11px", minWidth: "36px", textAlign: "center", lineHeight: 1.2, flexShrink: 0 }}>
+                    <div style={{ fontSize: "9px" }}>{fmtDate(c.date).month}</div>
+                    <div style={{ fontWeight: "900", fontSize: "14px" }}>{fmtDate(c.date).day}</div>
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ color: T.ink, fontFamily: "'Fraunces', serif", fontSize: "15px", fontWeight: "700" }}>{c.artist}</div>
+                    <div style={{ color: T.stamp, fontSize: "11px", fontFamily: "'Outfit', sans-serif" }}>{[c.venue, c.city].filter(Boolean).join(" · ")}</div>
+                  </div>
+                  {c.genre && <GenreSticker genre={c.genre} />}
+                </div>
+              ))}
+            </>
+          )}
         </div>
       )}
     </div>
@@ -978,7 +1093,15 @@ export default function App() {
               )}
             </div>
             {searchFocused && globalSearch && (
-              <GlobalSearchPanel query={globalSearch} allConcerts={allConcerts} onOpen={setSleeve} onClose={() => { setGlobalSearch(""); setSearchFocused(false); }} />
+              <GlobalSearchPanel
+                query={globalSearch}
+                allConcerts={allConcerts}
+                allUsers={users}
+                onOpenConcert={setSleeve}
+                onOpenProfile={setProfileView}
+                onToggleFollow={toggleFollow}
+                onClose={() => { setGlobalSearch(""); setSearchFocused(false); }}
+              />
             )}
           </div>
 
