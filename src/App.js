@@ -438,7 +438,7 @@ const SleeveModal = ({ concert, onClose, isOwn, onEdit }) => {
 // ─────────────────────────────────────────────────────────────────────────────
 // TICKET STUB
 // ─────────────────────────────────────────────────────────────────────────────
-const TicketStub = ({ concert, onEdit, onDelete, onOpen, showOwner, ownerName, ownerHandle, ownerAvatar, isEncore }) => {
+const TicketStub = ({ concert, onEdit, onDelete, onOpen, showOwner, ownerName, ownerHandle, ownerAvatar, isEncore, onOwnerClick }) => {
   const [hov, setHov] = useState(false);
   const { month, day, year } = fmtDate(concert.date);
   const mediaCount = concert.media?.length || 0;
@@ -465,8 +465,12 @@ const TicketStub = ({ concert, onEdit, onDelete, onOpen, showOwner, ownerName, o
       <div style={{ flex: 1, padding: "14px 18px", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
         <div>
           {showOwner && (
-            <div style={{ color: T.stamp, fontSize: "10px", fontFamily: "'Outfit', sans-serif", marginBottom: "4px" }}>
-              {ownerAvatar} {ownerName} <span style={{ color: T.grooveLt }}>{ownerHandle}</span>
+            <div
+              onClick={onOwnerClick ? (e) => { e.stopPropagation(); onOwnerClick(); } : undefined}
+              style={{ color: T.stamp, fontSize: "10px", fontFamily: "'Outfit', sans-serif", marginBottom: "4px", cursor: onOwnerClick ? "pointer" : "default", display: "inline-flex", alignItems: "center", gap: "4px" }}>
+              {ownerAvatar} <span style={{ fontWeight: "700" }}>{ownerName}</span>
+              <span style={{ color: T.grooveLt }}>{ownerHandle}</span>
+              {onOwnerClick && <span style={{ color: T.accent, fontSize: "9px" }}>↗</span>}
             </div>
           )}
           {isEncore && (
@@ -1084,7 +1088,7 @@ export default function App() {
                 onChange={e => setGlobalSearch(e.target.value)}
                 onFocus={() => setSearchFocused(true)}
                 onBlur={() => setTimeout(() => setSearchFocused(false), 150)}
-                placeholder="Search artists, venues, cities…"
+                placeholder="Find artists, venues, cities, & users…"
                 style={{ ...S.input, paddingLeft: "36px", background: "rgba(255,255,255,.08)", border: `1.5px solid rgba(255,255,255,.12)`, color: T.title, fontSize: "14px" }}
               />
               {globalSearch && (
@@ -1108,13 +1112,18 @@ export default function App() {
           {/* Stats */}
           <div style={{ display: "flex", gap: "36px", marginTop: "24px", paddingTop: "20px", borderTop: `1px solid rgba(255,255,255,.08)`, flexWrap: "wrap" }}>
             {[
-              { l: "Shows Pressed",       v: concerts.length },
-              { l: "Avg Rating",          v: avgRating },
-              { l: "Listeners Following", v: users.filter(u => u.following).length },
+              { l: "Shows Pressed",       v: concerts.length,                        onClick: () => setTab("b-side") },
+              { l: "Avg Rating",          v: avgRating,                              onClick: null },
+              { l: "Listeners Following", v: users.filter(u => u.following).length,  onClick: () => setTab("a-side") },
             ].map(s => (
-              <div key={s.l}>
+              <div key={s.l} onClick={s.onClick || undefined}
+                style={{ cursor: s.onClick ? "pointer" : "default", transition: "opacity .15s" }}
+                onMouseEnter={e => { if (s.onClick) e.currentTarget.style.opacity = "0.75"; }}
+                onMouseLeave={e => { e.currentTarget.style.opacity = "1"; }}>
                 <div style={{ color: T.accent, fontSize: "24px", fontFamily: "'Fraunces', serif", fontWeight: "700" }}>{s.v}</div>
-                <div style={{ color: T.groove, fontSize: "9px", letterSpacing: "2.5px", textTransform: "uppercase", marginTop: "2px" }}>{s.l}</div>
+                <div style={{ color: T.groove, fontSize: "9px", letterSpacing: "2.5px", textTransform: "uppercase", marginTop: "2px" }}>
+                  {s.l}{s.onClick ? <span style={{ color: T.accent, marginLeft: "4px" }}>↗</span> : ""}
+                </div>
               </div>
             ))}
           </div>
@@ -1173,7 +1182,31 @@ export default function App() {
               <div style={{ display: "flex", flexDirection: "column" }}>
                 {feed.map((c, i) => (
                   <div key={c.id + c._owner.id}>
-                    <TicketStub concert={c} onOpen={setSleeve} showOwner ownerName={c._owner.display_name || c._owner.username} ownerHandle={`@${c._owner.username}`} ownerAvatar={c._owner.avatar_emoji || "🎵"} />
+                    {/* Feed ticket row — stub + copy button side by side */}
+                    <div style={{ display: "flex", alignItems: "stretch", gap: "0" }}>
+                      <div style={{ flex: 1 }}>
+                        <TicketStub
+                          concert={c}
+                          onOpen={setSleeve}
+                          showOwner
+                          ownerName={c._owner.display_name || c._owner.username}
+                          ownerHandle={`@${c._owner.username}`}
+                          ownerAvatar={c._owner.avatar_emoji || "🎵"}
+                          onOwnerClick={() => setProfileView(c._owner)}
+                        />
+                      </div>
+                      {/* + Log this show button */}
+                      {authUser && (
+                        <button
+                          onClick={() => setModal({ artist: c.artist, venue: c.venue, city: c.city, date: c.date, genre: c.genre, setlist: c.setlist || [], media: [], review: "", rating: 0 })}
+                          title="Log this show to your collection"
+                          style={{ background: T.paper, border: `1.5px solid ${T.inkLight}`, borderLeft: "none", borderRadius: "0 3px 3px 0", padding: "0 14px", cursor: "pointer", color: T.stamp, fontSize: "18px", fontWeight: "700", transition: "all .2s", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}
+                          onMouseEnter={e => { e.currentTarget.style.background = T.accent; e.currentTarget.style.color = T.ink; }}
+                          onMouseLeave={e => { e.currentTarget.style.background = T.paper; e.currentTarget.style.color = T.stamp; }}>
+                          +
+                        </button>
+                      )}
+                    </div>
                     {i < feed.length - 1 && <Groove />}
                   </div>
                 ))}
@@ -1183,16 +1216,25 @@ export default function App() {
             {/* Listeners section below feed */}
             <div style={{ marginTop: "40px", paddingTop: "28px", borderTop: `2px solid ${T.groove}` }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
-                <div style={{ color: T.stamp, fontSize: "12px", fontStyle: "italic" }}>All profiles are public — anyone can be found &amp; followed</div>
+                <div>
+                  <div style={{ color: T.accent, fontSize: "10px", letterSpacing: "3px", textTransform: "uppercase", fontFamily: "'Outfit', sans-serif", marginBottom: "4px" }}>♫ All Listeners</div>
+                  <div style={{ color: T.stamp, fontSize: "12px", fontStyle: "italic" }}>All profiles are public — anyone can be found &amp; followed</div>
+                </div>
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
                 {users.map(u => (
                   <div key={u.id}
                     style={{ background: T.paper, border: `1.5px solid ${T.groove}`, borderRadius: "3px", padding: "14px 18px", display: "flex", alignItems: "center", gap: "14px", boxShadow: `2px 2px 0 ${T.grooveLt}` }}>
-                    <div style={{ fontSize: "26px", width: 42, height: 42, background: T.cream, border: `1px solid ${T.groove}`, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center" }}>{u.avatar_emoji || "🎵"}</div>
+                    <div style={{ fontSize: "26px", width: 42, height: 42, background: T.cream, border: `1px solid ${T.groove}`, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}
+                      onClick={() => setProfileView(u)}>
+                      {u.avatar_emoji || "🎵"}
+                    </div>
                     <div style={{ flex: 1, cursor: "pointer" }} onClick={() => setProfileView(u)}>
                       <div style={{ color: T.ink, fontFamily: "'Fraunces', serif", fontSize: "16px", fontWeight: "700" }}>{u.display_name || u.username}</div>
-                      <div style={{ color: T.stamp, fontSize: "11px" }}>@{u.username} · {u.concerts.length} shows · <span style={{ color: T.accent }}><Sym>▶</Sym> View profile</span></div>
+                      <div style={{ color: T.stamp, fontSize: "11px" }}>
+                        @{u.username} · {u.concerts.length} shows ·{" "}
+                        <span style={{ color: T.accent }}><Sym>▶</Sym> View profile</span>
+                      </div>
                     </div>
                     <button onClick={() => toggleFollow(u.id)}
                       style={{ background: u.following ? "transparent" : T.ink, border: u.following ? `1.5px solid ${T.groove}` : "none", color: u.following ? T.stamp : T.cream, borderRadius: "2px", padding: "7px 14px", cursor: "pointer", fontSize: "11px", fontWeight: "700", fontFamily: "'Outfit', sans-serif", letterSpacing: "1px", transition: "all .2s" }}>
