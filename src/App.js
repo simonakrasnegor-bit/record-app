@@ -363,10 +363,22 @@ const ConcertModal = ({ concert, onClose, onSave }) => {
           <button onClick={onClose} style={{ background: "none", border: "none", color: T.groove, cursor: "pointer" }}><Sym>■</Sym></button>
         </div>
         <div style={{ display: "grid", gap: "16px" }}>
-          <div><label style={S.label}>Artist / Band *</label><input style={S.input} value={f.artist} onChange={e => set("artist", e.target.value)} placeholder="e.g. Arctic Monkeys" /></div>
+          <div>
+            <label style={S.label}>Artist / Band *</label>
+            <input style={S.input} value={f.artist} onChange={e => set("artist", e.target.value)} placeholder="e.g. Arctic Monkeys" />
+          </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
-            <div><label style={S.label}>Venue</label><input style={S.input} value={f.venue} onChange={e => set("venue", e.target.value)} placeholder="e.g. The Fillmore" /></div>
-            <div><label style={S.label}>City</label><input style={S.input} value={f.city} onChange={e => set("city", e.target.value)} placeholder="e.g. Chicago, IL" /></div>
+            <div>
+              <label style={S.label}>Venue</label>
+              <input style={S.input} value={f.venue} onChange={e => set("venue", e.target.value)} placeholder="Type any venue name" />
+            </div>
+            <div>
+              <label style={S.label}>City</label>
+              <input style={S.input} value={f.city} onChange={e => set("city", e.target.value)} placeholder="e.g. Chicago, IL" />
+            </div>
+          </div>
+          <div style={{ marginTop: "-8px", color: T.groove, fontSize: "10px", fontFamily: "'Outfit', sans-serif" }}>
+            ♪ Type any artist, venue, or city — not in the list? Just write it in.
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
             <div><label style={S.label}>Date</label><input type="date" style={S.input} value={f.date} onChange={e => set("date", e.target.value)} /></div>
@@ -581,43 +593,107 @@ const EncoreListSection = ({ concerts, encoreList, onOpen, onToggleEncore, isOwn
 // ─────────────────────────────────────────────────────────────────────────────
 // PROFILE MODAL (other users)
 // ─────────────────────────────────────────────────────────────────────────────
-const ProfileModal = ({ user, onClose, onToggleFollow }) => {
+const ProfilePage = ({ user, onClose, onToggleFollow, onLogConcert }) => {
   const [sleeve, setSleeve] = useState(null);
+  const [search, setSearch] = useState("");
+  const concerts = (user.concerts || []);
+  const filtered = search.trim()
+    ? concerts.filter(c => [c.artist, c.venue, c.city, c.genre].some(x => (x||"").toLowerCase().includes(search.toLowerCase())))
+    : concerts;
+
   return (
-    <div style={{ position: "fixed", inset: 0, background: "rgba(26,16,8,.78)", zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center", padding: "20px", backdropFilter: "blur(4px)" }} onClick={onClose}>
-      <div onClick={e => e.stopPropagation()}
-        style={{ background: T.cream, border: `2px solid ${T.ink}`, borderRadius: "2px", width: "100%", maxWidth: "640px", maxHeight: "90vh", overflowY: "auto", boxShadow: `6px 6px 0 ${T.groove}` }}>
-        <div style={{ background: T.ink, padding: "28px 32px" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-            <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
-              <AvatarImg profile={user} size={54} />
-              <div>
-                <div style={{ color: T.accent, fontSize: "10px", letterSpacing: "3px", textTransform: "uppercase", fontFamily: "'Outfit', sans-serif", marginBottom: "4px" }}>♪ PUBLIC PROFILE</div>
-                <div style={{ color: T.title, fontFamily: "'Fraunces', serif", fontSize: "22px", fontWeight: "700" }}>{user.display_name || user.username}</div>
-                <div style={{ color: T.groove, fontFamily: "'Outfit', sans-serif", fontSize: "11px" }}>@{user.username} · {user.concerts?.length || 0} shows pressed</div>
-              </div>
-            </div>
-            <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
-              <button onClick={() => onToggleFollow(user.id)}
-                style={{ background: user.following ? "transparent" : T.accent, border: user.following ? `1px solid ${T.groove}` : "none", color: user.following ? T.groove : T.ink, borderRadius: "3px", padding: "8px 16px", cursor: "pointer", fontSize: "12px", fontWeight: "700", fontFamily: "'Outfit', sans-serif" }}>
-                {user.following ? <><Sym>■</Sym> Unfollow</> : <><Sym>▶</Sym> Follow</>}
-              </button>
-              <button onClick={onClose} style={{ background: "none", border: "none", color: T.groove, cursor: "pointer" }}><Sym>■</Sym></button>
-            </div>
-          </div>
+    <div style={{ position: "fixed", inset: 0, zIndex: 200, background: T.bg, display: "flex", flexDirection: "column", overflowY: "auto" }}>
+
+      {/* ── Header bar ── */}
+      <div style={{ background: T.ink, borderBottom: `4px solid ${T.accent}`, padding: "0 32px", position: "sticky", top: 0, zIndex: 10 }}>
+        <div style={{ maxWidth: "760px", margin: "0 auto", padding: "20px 0", display: "flex", alignItems: "center", gap: "16px" }}>
+          <button onClick={onClose}
+            style={{ background: "transparent", border: `1px solid ${T.groove}`, color: T.groove, borderRadius: "2px", padding: "7px 14px", cursor: "pointer", fontSize: "10px", letterSpacing: "2px", textTransform: "uppercase", fontFamily: "'Outfit', sans-serif", whiteSpace: "nowrap" }}>
+            ← Back
+          </button>
+          <div style={{ flex: 1 }} />
+          <button onClick={() => onToggleFollow(user.id)}
+            style={{ background: user.following ? "transparent" : T.accent, border: user.following ? `1.5px solid ${T.groove}` : "none", color: user.following ? T.groove : T.ink, borderRadius: "2px", padding: "8px 18px", cursor: "pointer", fontSize: "11px", fontWeight: "700", fontFamily: "'Outfit', sans-serif", letterSpacing: "1px" }}>
+            {user.following ? <><Sym>■</Sym> Unfollow</> : <><Sym>▶</Sym> Follow</>}
+          </button>
         </div>
-        <div style={{ padding: "24px 32px" }}>
-          <EncoreListSection concerts={user.concerts || []} encoreList={user.encore_list || []} onOpen={setSleeve} isOwn={false} />
-          <div style={{ display: "flex", flexDirection: "column" }}>
-            {(user.concerts || []).map((c, i) => (
-              <div key={c.id}>
-                <TicketStub concert={c} onOpen={setSleeve} />
-                {i < user.concerts.length - 1 && <Groove />}
+      </div>
+
+      {/* ── Profile hero ── */}
+      <div style={{ background: T.ink, padding: "0 32px 40px" }}>
+        <div style={{ maxWidth: "760px", margin: "0 auto" }}>
+          {/* Groove lines */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "4px", marginBottom: "28px" }}>
+            {[0.05, 0.09, 0.06].map((op, i) => <div key={i} style={{ height: "1px", background: `rgba(126,200,216,${op})` }} />)}
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
+            <AvatarImg profile={user} size={72} />
+            <div>
+              <div style={{ color: T.accent, fontSize: "10px", letterSpacing: "4px", textTransform: "uppercase", fontFamily: "'Outfit', sans-serif", marginBottom: "6px" }}>♪ Listener</div>
+              <div style={{ color: T.title, fontFamily: "'Fraunces', serif", fontSize: "clamp(28px,5vw,42px)", fontWeight: "900", letterSpacing: "-1px", lineHeight: 1 }}>
+                {user.display_name || user.username}
               </div>
-            ))}
+              <div style={{ color: T.groove, fontFamily: "'Outfit', sans-serif", fontSize: "12px", marginTop: "6px" }}>
+                @{user.username} · {concerts.length} show{concerts.length !== 1 ? "s" : ""} pressed
+              </div>
+            </div>
           </div>
         </div>
       </div>
+
+      {/* ── Content ── */}
+      <div style={{ flex: 1, maxWidth: "760px", width: "100%", margin: "0 auto", padding: "28px 32px 60px" }}>
+
+        {/* Encore List */}
+        <EncoreListSection
+          concerts={concerts}
+          encoreList={user.encore_list || []}
+          onOpen={setSleeve}
+          isOwn={false}
+        />
+
+        {/* Concert log header + search */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "16px", marginTop: "8px", flexWrap: "wrap", gap: "10px" }}>
+          <div style={{ color: T.accent, fontSize: "10px", letterSpacing: "3px", textTransform: "uppercase", fontFamily: "'Outfit', sans-serif" }}>
+            ♫ {concerts.length} Show{concerts.length !== 1 ? "s" : ""} Pressed
+          </div>
+          <input
+            value={search} onChange={e => setSearch(e.target.value)}
+            placeholder="♪  Filter shows…"
+            style={{ ...S.input, width: "220px", fontSize: "13px" }}
+          />
+        </div>
+
+        {/* Concert list with + buttons */}
+        {filtered.length === 0 ? (
+          <div style={{ textAlign: "center", padding: "60px 20px", color: T.groove, fontFamily: "'Outfit', sans-serif", fontSize: "13px", fontStyle: "italic" }}>
+            {search ? "No shows match that search." : "No shows logged yet."}
+          </div>
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            {filtered.map((c, i) => (
+              <div key={c.id}>
+                <div style={{ display: "flex", alignItems: "stretch" }}>
+                  <div style={{ flex: 1 }}>
+                    <TicketStub concert={c} onOpen={setSleeve} />
+                  </div>
+                  {/* + Log this show */}
+                  <button
+                    onClick={() => onLogConcert(c)}
+                    title="Log this show to your collection"
+                    style={{ background: T.paper, border: `1.5px solid ${T.inkLight}`, borderLeft: "none", borderRadius: "0 3px 3px 0", padding: "0 16px", cursor: "pointer", color: T.stamp, fontSize: "20px", fontWeight: "700", transition: "all .2s", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}
+                    onMouseEnter={e => { e.currentTarget.style.background = T.accent; e.currentTarget.style.color = T.ink; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = T.paper; e.currentTarget.style.color = T.stamp; }}>
+                    +
+                  </button>
+                </div>
+                {i < filtered.length - 1 && <Groove />}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
       {sleeve && <SleeveModal concert={sleeve} onClose={() => setSleeve(null)} isOwn={false} onEdit={() => {}} />}
     </div>
   );
@@ -1486,7 +1562,9 @@ export default function App() {
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: "10px", alignItems: "flex-end" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                <AvatarImg profile={profile} size={28} />
+                <div onClick={() => setShowEditProfile(true)} style={{ cursor: "pointer" }} title="Edit profile">
+                  <AvatarImg profile={profile} size={32} />
+                </div>
                 <div style={{ color: T.groove, fontSize: "12px", fontFamily: "'Outfit', sans-serif" }}>
                   {profile?.display_name || profile?.username || authUser.email}
                 </div>
@@ -1624,7 +1702,7 @@ export default function App() {
                       {/* + Log this show button */}
                       {authUser && (
                         <button
-                          onClick={() => setModal({ artist: c.artist, venue: c.venue, city: c.city, date: c.date, genre: c.genre, setlist: c.setlist || [], media: [], review: "", rating: 0 })}
+                          onClick={() => setModal({ artist: c.artist, venue: c.venue, city: c.city, date: c.date, genre: c.genre, setlist: [], media: [], review: "", rating: 0 })}
                           title="Log this show to your collection"
                           style={{ background: T.paper, border: `1.5px solid ${T.inkLight}`, borderLeft: "none", borderRadius: "0 3px 3px 0", padding: "0 14px", cursor: "pointer", color: T.stamp, fontSize: "18px", fontWeight: "700", transition: "all .2s", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}
                           onMouseEnter={e => { e.currentTarget.style.background = T.accent; e.currentTarget.style.color = T.ink; }}
@@ -1638,62 +1716,12 @@ export default function App() {
                 ))}
               </div>
             )}
-
-            {/* Listeners section below feed */}
-            <div style={{ marginTop: "40px", paddingTop: "28px", borderTop: `2px solid ${T.groove}` }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
-                <div>
-                  <div style={{ color: T.accent, fontSize: "10px", letterSpacing: "3px", textTransform: "uppercase", fontFamily: "'Outfit', sans-serif", marginBottom: "4px" }}>♫ All Listeners</div>
-                  <div style={{ color: T.stamp, fontSize: "12px", fontStyle: "italic" }}>All profiles are public — anyone can be found &amp; followed</div>
-                </div>
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                {users.map(u => (
-                  <div key={u.id}
-                    style={{ background: T.paper, border: `1.5px solid ${T.groove}`, borderRadius: "3px", padding: "14px 18px", display: "flex", alignItems: "center", gap: "14px", boxShadow: `2px 2px 0 ${T.grooveLt}` }}>
-                    <div onClick={() => setProfileView(u)}
-                      style={{ flexShrink: 0, cursor: "pointer" }}>
-                      <AvatarImg profile={u} size={44} />
-                    </div>
-                    <div style={{ flex: 1, cursor: "pointer" }} onClick={() => setProfileView(u)}>
-                      <div style={{ color: T.ink, fontFamily: "'Fraunces', serif", fontSize: "16px", fontWeight: "700" }}>{u.display_name || u.username}</div>
-                      <div style={{ color: T.stamp, fontSize: "11px" }}>
-                        @{u.username} · {u.concerts.length} shows ·{" "}
-                        <span style={{ color: T.accent }}><Sym>▶</Sym> View profile</span>
-                      </div>
-                    </div>
-                    <button onClick={() => toggleFollow(u.id)}
-                      style={{ background: u.following ? "transparent" : T.ink, border: u.following ? `1.5px solid ${T.groove}` : "none", color: u.following ? T.stamp : T.cream, borderRadius: "2px", padding: "7px 14px", cursor: "pointer", fontSize: "11px", fontWeight: "700", fontFamily: "'Outfit', sans-serif", letterSpacing: "1px", transition: "all .2s" }}>
-                      {u.following ? <><Sym>■</Sym> Unfollow</> : <><Sym>▶</Sym> Follow</>}
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
           </>
         )}
 
-        {/* ── B-SIDE (your profile / logs) ── */}
+        {/* ── B-SIDE (your logs) ── */}
         {tab === "b-side" && (
           <>
-                {/* Profile header */}
-                <div style={{ background: T.paper, border: `2px solid ${T.inkLight}`, borderRadius: "4px", padding: "24px", marginBottom: "28px" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-                    <AvatarImg profile={profile} size={60} />
-                    <div style={{ flex: 1 }}>
-                      <div style={{ color: T.accent, fontSize: "10px", letterSpacing: "3px", textTransform: "uppercase", fontFamily: "'Outfit', sans-serif", marginBottom: "3px" }}>♪ YOUR SIDE</div>
-                      <div style={{ fontFamily: "'Fraunces', serif", fontSize: "22px", color: T.ink, fontWeight: "700" }}>{profile?.display_name || profile?.username}</div>
-                      <div style={{ color: T.stamp, fontSize: "11px", fontFamily: "'Outfit', sans-serif" }}>@{profile?.username} · {concerts.length} shows pressed</div>
-                    </div>
-                    <button onClick={() => setShowEditProfile(true)}
-                      style={{ background: "transparent", border: `1.5px solid ${T.groove}`, color: T.stamp, borderRadius: "2px", padding: "7px 14px", cursor: "pointer", fontSize: "10px", fontWeight: "700", fontFamily: "'Outfit', sans-serif", letterSpacing: "1.5px", textTransform: "uppercase", whiteSpace: "nowrap", transition: "all .2s" }}
-                      onMouseEnter={e => { e.currentTarget.style.borderColor = T.accent; e.currentTarget.style.color = T.accent; }}
-                      onMouseLeave={e => { e.currentTarget.style.borderColor = T.groove; e.currentTarget.style.color = T.stamp; }}>
-                      ✎ Edit Profile
-                    </button>
-                  </div>
-                </div>
-
                 {/* Encore list */}
                 <EncoreListSection
                   concerts={concerts}
@@ -1768,7 +1796,7 @@ export default function App() {
       {/* ── MODALS ── */}
       {modal        && <ConcertModal concert={modal === "new" ? null : modal} onClose={() => setModal(null)} onSave={handleSave} />}
       {sleeve       && <SleeveModal concert={sleeve} onClose={() => setSleeve(null)} isOwn={authUser && !sleeve._owner} onEdit={(c) => { setSleeve(null); setModal(c); }} />}
-      {profileView  && <ProfileModal user={profileView} onClose={() => setProfileView(null)} onToggleFollow={toggleFollow} />}
+      {profileView  && <ProfilePage user={profileView} onClose={() => setProfileView(null)} onToggleFollow={toggleFollow} onLogConcert={(c) => { setProfileView(null); setModal({ artist: c.artist, venue: c.venue, city: c.city, date: c.date, genre: c.genre, setlist: [], media: [], review: "", rating: 0 }); }} />}
       {showFindUsers && <FindUsersModal onClose={() => setShowFindUsers(false)} users={users} onToggleFollow={toggleFollow} onViewProfile={(u) => { setProfileView(u); setShowFindUsers(false); }} />}
       {showFollowing && <FollowingModal users={users} onClose={() => setShowFollowing(false)} onViewProfile={setProfileView} onToggleFollow={toggleFollow} />}
       {showEditProfile && <EditProfileModal profile={profile} onClose={() => setShowEditProfile(false)} onSave={(updated) => setProfile(updated)} />}
