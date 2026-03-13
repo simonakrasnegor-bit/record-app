@@ -1698,7 +1698,7 @@ export default function App() {
 
           <div style={{ marginTop: "48px" }}>
             <div style={{ color: T.accent, fontSize: "10px", letterSpacing: "5px", textTransform: "uppercase", fontFamily: "'Outfit', sans-serif", marginBottom: "20px" }}>
-              ♪ ♫ &nbsp; {APP_SUBTITLE}
+              {APP_SUBTITLE}
             </div>
             <h1 style={{ fontFamily: "'Fraunces', serif", fontSize: "clamp(64px, 10vw, 96px)", fontWeight: "900", letterSpacing: "-4px", lineHeight: 0.88, color: T.title }}>
               {APP_NAME}
@@ -1774,7 +1774,7 @@ export default function App() {
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: "20px" }}>
             <div>
               <div style={{ color: T.accent, fontSize: "10px", letterSpacing: "5px", textTransform: "uppercase", marginBottom: "10px", fontFamily: "'Outfit', sans-serif" }}>
-                ♪ ♫ &nbsp; {APP_SUBTITLE}
+                {APP_SUBTITLE}
               </div>
               <h1 style={{ fontFamily: "'Fraunces', serif", fontSize: "clamp(52px,8vw,80px)", fontWeight: "900", letterSpacing: "-3px", lineHeight: 0.9, color: T.title }}>
                 {APP_NAME}
