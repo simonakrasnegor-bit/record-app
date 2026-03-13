@@ -1714,7 +1714,8 @@ export default function App() {
                   </select>
                 </div>
 
-                {loading ? <Spinner /> : filtered.length === 0 ? (
+                {loading && <Spinner />}
+                {!loading && filtered.length === 0 && (
                   <div style={{ textAlign: "center", padding: "80px 20px" }}>
                     <div style={{ fontSize: "52px", color: T.groove, marginBottom: "16px" }}>♪</div>
                     <div style={{ fontFamily: "'Fraunces', serif", fontSize: "22px", color: T.groove, marginBottom: "8px" }}>
@@ -1724,7 +1725,8 @@ export default function App() {
                       {concertSearch ? "Try a different search." : "Press your first record to get started."}
                     </div>
                   </div>
-                ) : (
+                )}
+                {!loading && filtered.length > 0 && (
                   <div style={{ display: "flex", flexDirection: "column" }}>
                     {filtered.map((c, i) => (
                       <div key={c.id}>
@@ -1756,7 +1758,7 @@ export default function App() {
                       </div>
                     ))}
                   </div>
-                }
+                )}
           </>
         )}
       </div>
