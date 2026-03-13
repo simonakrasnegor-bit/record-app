@@ -511,7 +511,7 @@ const TicketStub = ({ concert, onEdit, onDelete, onOpen, showOwner, ownerName, o
         <div style={{ color: T.accent, fontSize: "9px", fontWeight: "700", letterSpacing: "2px", fontFamily: "'Outfit', sans-serif" }}>{month}</div>
         <div style={{ color: T.title, fontSize: "26px", fontFamily: "'Fraunces', serif", fontWeight: "900", lineHeight: 1 }}>{day}</div>
         <div style={{ color: T.groove, fontSize: "9px", fontFamily: "'Outfit', sans-serif" }}>{year}</div>
-        <div style={{ color: T.accent, fontSize: "14px", marginTop: "6px" }}>\u266a</div>
+        <div style={{ color: T.accent, fontSize: "14px", marginTop: "6px" }}>♪</div>
       </div>
       {/* Main content */}
       <div style={{ flex: 1, padding: "13px 16px", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
@@ -523,11 +523,11 @@ const TicketStub = ({ concert, onEdit, onDelete, onOpen, showOwner, ownerName, o
               <AvatarImg profile={ownerProfile} size={18} />
               <span style={{ fontWeight: "700" }}>{ownerName}</span>
               <span style={{ color: T.grooveLt }}>{ownerHandle}</span>
-              {onOwnerClick && <span style={{ color: T.accent, fontSize: "9px" }}>\u2197</span>}
+              {onOwnerClick && <span style={{ color: T.accent, fontSize: "9px" }}>↗</span>}
             </div>
           )}
           {isEncore && (
-            <div style={{ color: T.royal, fontSize: "8px", fontFamily: "'Outfit', sans-serif", letterSpacing: "2.5px", textTransform: "uppercase", marginBottom: "3px", fontWeight: "700" }}>\u2605 Encore List</div>
+            <div style={{ color: T.royal, fontSize: "8px", fontFamily: "'Outfit', sans-serif", letterSpacing: "2.5px", textTransform: "uppercase", marginBottom: "3px", fontWeight: "700" }}>★ Encore List</div>
           )}
           {/* Artist — clickable */}
           <div
@@ -535,7 +535,7 @@ const TicketStub = ({ concert, onEdit, onDelete, onOpen, showOwner, ownerName, o
             style={{ color: T.ink, fontSize: "19px", fontFamily: "'Fraunces', serif", fontWeight: "700", lineHeight: 1.15, cursor: onArtistClick ? "pointer" : "default", display: "inline-block" }}
             title={onArtistClick ? `View ${concert.artist} profile` : undefined}>
             {concert.artist}
-            {onArtistClick && <span style={{ color: T.accent, fontSize: "10px", marginLeft: "5px" }}>\u2197</span>}
+            {onArtistClick && <span style={{ color: T.accent, fontSize: "10px", marginLeft: "5px" }}>↗</span>}
           </div>
           {/* Venue + city — venue clickable */}
           <div style={{ color: T.stamp, fontSize: "12px", fontFamily: "'Outfit', sans-serif", marginTop: "3px" }}>
@@ -546,7 +546,7 @@ const TicketStub = ({ concert, onEdit, onDelete, onOpen, showOwner, ownerName, o
                 {concert.venue}
               </span>
             )}
-            {concert.venue && concert.city && <span> \u00b7 </span>}
+            {concert.venue && concert.city && <span> · </span>}
             {concert.city && <span>{concert.city}</span>}
           </div>
         </div>
@@ -556,17 +556,17 @@ const TicketStub = ({ concert, onEdit, onDelete, onOpen, showOwner, ownerName, o
             {concert.genre && <GenreSticker genre={concert.genre} />}
           </div>
           <div style={{ display: "flex", gap: "10px", color: T.groove, fontSize: "11px", fontFamily: "'Outfit', sans-serif" }}>
-            {concert.setlist?.length > 0 && <span>\u266a {concert.setlist.length} tracks</span>}
-            {mediaCount > 0 && <span>\u25c6 {mediaCount}</span>}
-            {concert.review && <span>\u2014</span>}
+            {concert.setlist?.length > 0 && <span>♪ {concert.setlist.length} tracks</span>}
+            {mediaCount > 0 && <span>◆ {mediaCount}</span>}
+            {concert.review && <span>—</span>}
           </div>
         </div>
       </div>
       {(onEdit || onDelete) && (
         <div onClick={e => e.stopPropagation()}
           style={{ background: T.paper, borderLeft: `1px dashed ${T.groove}`, width: 40, minWidth: 40, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "14px", opacity: hov ? 1 : 0, transition: "opacity .2s" }}>
-          <button onClick={() => onEdit(concert)} style={{ background: "none", border: "none", color: T.stamp, cursor: "pointer", padding: "4px", fontSize: "13px" }}>\u25b8</button>
-          <button onClick={() => onDelete(concert.id)} style={{ background: "none", border: "none", color: T.red, cursor: "pointer", padding: "4px", fontSize: "13px" }}>\u00d7</button>
+          <button onClick={() => onEdit(concert)} style={{ background: "none", border: "none", color: T.stamp, cursor: "pointer", padding: "4px", fontSize: "13px" }}>▸</button>
+          <button onClick={() => onDelete(concert.id)} style={{ background: "none", border: "none", color: T.red, cursor: "pointer", padding: "4px", fontSize: "13px" }}>×</button>
         </div>
       )}
     </div>
@@ -590,7 +590,7 @@ const EncoreListSection = ({ concerts, encoreList, onOpen, onToggleEncore, isOwn
       {encoreConcerts.length === 0 ? (
         <div style={{ textAlign: "center", padding: "24px", color: T.royal, fontFamily: "'Outfit', sans-serif", fontSize: "13px", fontStyle: "italic", border: `1px dashed ${T.royal}`, borderRadius: "3px", opacity: 0.7 }}>
           {isOwn
-            ? "Add up to 3 all-time favourite shows \u2014 hover a show and click \u2605 to add it here."
+            ? "Add up to 3 all-time favourite shows — hover a show and click ★ to add it here."
             : "No shows added to the Encore List yet."}
         </div>
       ) : (
@@ -601,7 +601,7 @@ const EncoreListSection = ({ concerts, encoreList, onOpen, onToggleEncore, isOwn
                 <div style={{ color: T.royal, fontFamily: "'Fraunces', serif", fontSize: "28px", fontWeight: "900", minWidth: "32px", textAlign: "center", lineHeight: 1 }}>{i + 1}</div>
                 <div style={{ flex: 1 }}><TicketStub concert={c} onOpen={onOpen} isEncore /></div>
                 {isOwn && (
-                  <button onClick={() => onToggleEncore(c.id)} style={{ background: "none", border: "none", color: T.royal, cursor: "pointer", fontSize: "18px", padding: "4px" }}>\u2605</button>
+                  <button onClick={() => onToggleEncore(c.id)} style={{ background: "none", border: "none", color: T.royal, cursor: "pointer", fontSize: "18px", padding: "4px" }}>★</button>
                 )}
               </div>
               {i < encoreConcerts.length - 1 && <Groove />}
@@ -619,15 +619,15 @@ const EncoreListSection = ({ concerts, encoreList, onOpen, onToggleEncore, isOwn
 const ArtistPage = ({ artistName, allConcerts, allUsers, onClose }) => {
   const concerts = allConcerts.filter(c => (c.artist||"").toLowerCase() === artistName.toLowerCase());
   const listeners = allUsers.filter(u => u.concerts.some(c => (c.artist||"").toLowerCase() === artistName.toLowerCase()));
-  const avgRating = concerts.length ? (concerts.reduce((s,c) => s + (c.rating||0), 0) / concerts.length).toFixed(1) : "\u2014";
-  const topCity = (() => { const ct = {}; concerts.forEach(c => { if (c.city) ct[c.city] = (ct[c.city]||0)+1; }); return Object.entries(ct).sort((a,b)=>b[1]-a[1])[0]?.[0] || "\u2014"; })();
-  const topGenre = (() => { const ct = {}; concerts.forEach(c => { if (c.genre) ct[c.genre] = (ct[c.genre]||0)+1; }); return Object.entries(ct).sort((a,b)=>b[1]-a[1])[0]?.[0] || "\u2014"; })();
+  const avgRating = concerts.length ? (concerts.reduce((s,c) => s + (c.rating||0), 0) / concerts.length).toFixed(1) : "—";
+  const topCity = (() => { const ct = {}; concerts.forEach(c => { if (c.city) ct[c.city] = (ct[c.city]||0)+1; }); return Object.entries(ct).sort((a,b)=>b[1]-a[1])[0]?.[0] || "—"; })();
+  const topGenre = (() => { const ct = {}; concerts.forEach(c => { if (c.genre) ct[c.genre] = (ct[c.genre]||0)+1; }); return Object.entries(ct).sort((a,b)=>b[1]-a[1])[0]?.[0] || "—"; })();
   const [sleeve, setSleeve] = useState(null);
   return (
     <div style={{ position: "fixed", inset: 0, zIndex: 300, background: T.bg, display: "flex", flexDirection: "column", overflowY: "auto" }}>
       <div style={{ background: T.ink, padding: "0 32px", position: "sticky", top: 0, zIndex: 10, borderBottom: `3px solid ${T.accent}` }}>
         <div style={{ maxWidth: "760px", margin: "0 auto", padding: "18px 0", display: "flex", alignItems: "center", gap: "16px" }}>
-          <button onClick={onClose} style={{ background: "transparent", border: `1px solid ${T.groove}`, color: T.groove, borderRadius: "3px", padding: "7px 14px", cursor: "pointer", fontSize: "9px", letterSpacing: "2.5px", textTransform: "uppercase", fontFamily: "'Outfit', sans-serif" }}>\u2190 Back</button>
+          <button onClick={onClose} style={{ background: "transparent", border: `1px solid ${T.groove}`, color: T.groove, borderRadius: "3px", padding: "7px 14px", cursor: "pointer", fontSize: "9px", letterSpacing: "2.5px", textTransform: "uppercase", fontFamily: "'Outfit', sans-serif" }}>← Back</button>
           <div style={{ color: T.groove, fontSize: "9px", letterSpacing: "3px", textTransform: "uppercase", fontFamily: "'Outfit', sans-serif" }}>Artist Profile</div>
         </div>
       </div>
@@ -645,9 +645,9 @@ const ArtistPage = ({ artistName, allConcerts, allUsers, onClose }) => {
               <circle cx="50" cy="50" r="2" fill="#111" />
             </svg>
             <div style={{ flex: 1 }}>
-              <div style={{ color: T.accent, fontSize: "9px", letterSpacing: "4px", textTransform: "uppercase", fontFamily: "'Outfit', sans-serif", marginBottom: "8px" }}>\u266a Artist</div>
+              <div style={{ color: T.accent, fontSize: "9px", letterSpacing: "4px", textTransform: "uppercase", fontFamily: "'Outfit', sans-serif", marginBottom: "8px" }}>♪ Artist</div>
               <h1 style={{ color: T.title, fontFamily: "'Fraunces', serif", fontSize: "clamp(28px,6vw,52px)", fontWeight: "900", letterSpacing: "-1.5px", lineHeight: 0.95, margin: 0 }}>{artistName}</h1>
-              <div style={{ color: T.groove, fontSize: "12px", fontFamily: "'Outfit', sans-serif", marginTop: "10px" }}>{concerts.length} show{concerts.length !== 1 ? "s" : ""} logged \u00b7 {listeners.length} listener{listeners.length !== 1 ? "s" : ""}</div>
+              <div style={{ color: T.groove, fontSize: "12px", fontFamily: "'Outfit', sans-serif", marginTop: "10px" }}>{concerts.length} show{concerts.length !== 1 ? "s" : ""} logged · {listeners.length} listener{listeners.length !== 1 ? "s" : ""}</div>
             </div>
           </div>
         </div>
@@ -672,7 +672,7 @@ const ArtistPage = ({ artistName, allConcerts, allUsers, onClose }) => {
             )}
           </div>
         </div>
-        <div style={{ color: T.stamp, fontSize: "9px", letterSpacing: "3px", textTransform: "uppercase", fontFamily: "'Outfit', sans-serif", marginBottom: "14px", fontWeight: "700" }}>\u266b All Shows Logged</div>
+        <div style={{ color: T.stamp, fontSize: "9px", letterSpacing: "3px", textTransform: "uppercase", fontFamily: "'Outfit', sans-serif", marginBottom: "14px", fontWeight: "700" }}>♫ All Shows Logged</div>
         <div style={{ display: "flex", flexDirection: "column" }}>
           {concerts.map((c,i) => <div key={c.id||i}><TicketStub concert={c} onOpen={setSleeve} showOwner={!!c._owner} ownerName={c._owner?.display_name||c._owner?.username} ownerHandle={c._owner?`@${c._owner.username}`:""} ownerProfile={c._owner} />{i<concerts.length-1&&<Groove />}</div>)}
         </div>
@@ -688,15 +688,15 @@ const ArtistPage = ({ artistName, allConcerts, allUsers, onClose }) => {
 const VenuePage = ({ venueName, allConcerts, allUsers, onClose }) => {
   const concerts = allConcerts.filter(c => (c.venue||"").toLowerCase() === venueName.toLowerCase());
   const listeners = allUsers.filter(u => u.concerts.some(c => (c.venue||"").toLowerCase() === venueName.toLowerCase()));
-  const avgRating = concerts.length ? (concerts.reduce((s,c) => s + (c.rating||0), 0) / concerts.length).toFixed(1) : "\u2014";
-  const topArtist = (() => { const ct = {}; concerts.forEach(c => { if (c.artist) ct[c.artist] = (ct[c.artist]||0)+1; }); return Object.entries(ct).sort((a,b)=>b[1]-a[1])[0]?.[0] || "\u2014"; })();
-  const city = concerts[0]?.city || "\u2014";
+  const avgRating = concerts.length ? (concerts.reduce((s,c) => s + (c.rating||0), 0) / concerts.length).toFixed(1) : "—";
+  const topArtist = (() => { const ct = {}; concerts.forEach(c => { if (c.artist) ct[c.artist] = (ct[c.artist]||0)+1; }); return Object.entries(ct).sort((a,b)=>b[1]-a[1])[0]?.[0] || "—"; })();
+  const city = concerts[0]?.city || "—";
   const [sleeve, setSleeve] = useState(null);
   return (
     <div style={{ position: "fixed", inset: 0, zIndex: 300, background: T.bg, display: "flex", flexDirection: "column", overflowY: "auto" }}>
       <div style={{ background: T.ink, padding: "0 32px", position: "sticky", top: 0, zIndex: 10, borderBottom: `3px solid ${T.accent}` }}>
         <div style={{ maxWidth: "760px", margin: "0 auto", padding: "18px 0", display: "flex", alignItems: "center", gap: "16px" }}>
-          <button onClick={onClose} style={{ background: "transparent", border: `1px solid ${T.groove}`, color: T.groove, borderRadius: "3px", padding: "7px 14px", cursor: "pointer", fontSize: "9px", letterSpacing: "2.5px", textTransform: "uppercase", fontFamily: "'Outfit', sans-serif" }}>\u2190 Back</button>
+          <button onClick={onClose} style={{ background: "transparent", border: `1px solid ${T.groove}`, color: T.groove, borderRadius: "3px", padding: "7px 14px", cursor: "pointer", fontSize: "9px", letterSpacing: "2.5px", textTransform: "uppercase", fontFamily: "'Outfit', sans-serif" }}>← Back</button>
           <div style={{ color: T.groove, fontSize: "9px", letterSpacing: "3px", textTransform: "uppercase", fontFamily: "'Outfit', sans-serif" }}>Venue Profile</div>
         </div>
       </div>
@@ -705,9 +705,9 @@ const VenuePage = ({ venueName, allConcerts, allUsers, onClose }) => {
           <div style={{ display: "flex", flexDirection: "column", gap: "4px", marginBottom: "24px", paddingTop: "8px" }}>
             {[0.05,0.09,0.06].map((op,i) => <div key={i} style={{ height:"1px", background:`rgba(126,200,216,${op})` }} />)}
           </div>
-          <div style={{ color: T.accent, fontSize: "9px", letterSpacing: "4px", textTransform: "uppercase", fontFamily: "'Outfit', sans-serif", marginBottom: "8px" }}>\u25cf Venue</div>
+          <div style={{ color: T.accent, fontSize: "9px", letterSpacing: "4px", textTransform: "uppercase", fontFamily: "'Outfit', sans-serif", marginBottom: "8px" }}>● Venue</div>
           <h1 style={{ color: T.title, fontFamily: "'Fraunces', serif", fontSize: "clamp(28px,6vw,52px)", fontWeight: "900", letterSpacing: "-1.5px", lineHeight: 0.95, margin: 0 }}>{venueName}</h1>
-          <div style={{ color: T.groove, fontSize: "12px", fontFamily: "'Outfit', sans-serif", marginTop: "10px" }}>{city} \u00b7 {concerts.length} show{concerts.length !== 1 ? "s" : ""} \u00b7 {listeners.length} listener{listeners.length !== 1 ? "s" : ""}</div>
+          <div style={{ color: T.groove, fontSize: "12px", fontFamily: "'Outfit', sans-serif", marginTop: "10px" }}>{city} · {concerts.length} show{concerts.length !== 1 ? "s" : ""} · {listeners.length} listener{listeners.length !== 1 ? "s" : ""}</div>
         </div>
       </div>
       <div style={{ maxWidth: "760px", width: "100%", margin: "0 auto", padding: "32px 32px 60px" }}>
@@ -730,7 +730,7 @@ const VenuePage = ({ venueName, allConcerts, allUsers, onClose }) => {
             )}
           </div>
         </div>
-        <div style={{ color: T.stamp, fontSize: "9px", letterSpacing: "3px", textTransform: "uppercase", fontFamily: "'Outfit', sans-serif", marginBottom: "14px", fontWeight: "700" }}>\u266b All Shows Here</div>
+        <div style={{ color: T.stamp, fontSize: "9px", letterSpacing: "3px", textTransform: "uppercase", fontFamily: "'Outfit', sans-serif", marginBottom: "14px", fontWeight: "700" }}>♫ All Shows Here</div>
         <div style={{ display: "flex", flexDirection: "column" }}>
           {concerts.map((c,i) => <div key={c.id||i}><TicketStub concert={c} onOpen={setSleeve} showOwner={!!c._owner} ownerName={c._owner?.display_name||c._owner?.username} ownerHandle={c._owner?`@${c._owner.username}`:""} ownerProfile={c._owner} />{i<concerts.length-1&&<Groove />}</div>)}
         </div>
@@ -1899,7 +1899,7 @@ export default function App() {
             </div>
             {feed.length === 0 ? (
               <div style={{ textAlign: "center", padding: "80px 20px" }}>
-                <div style={{ fontSize: "42px", color: T.groove, marginBottom: "16px" }}>{"\u266b"}</div>
+                <div style={{ fontSize: "42px", color: T.groove, marginBottom: "16px" }}>{"♫"}</div>
                 <div style={{ fontFamily: "'Fraunces', serif", fontSize: "22px", color: T.inkLight, marginBottom: "8px" }}>The listening room is quiet.</div>
                 <div style={{ fontSize: "13px", color: T.groove, fontStyle: "italic", fontFamily: "'Outfit', sans-serif" }}>Follow some listeners to hear what they've been to.</div>
               </div>
@@ -2004,7 +2004,7 @@ export default function App() {
                               color: encoreList.map(String).includes(String(c.id)) ? T.royal : T.groove,
                               opacity: encoreList.length >= 3 && !encoreList.map(String).includes(String(c.id)) ? 0.3 : 1,
                               transition: "color .2s",
-                            }}>{"\u2605"}</button>
+                            }}>{"★"}</button>
                         </div>
                         {i < filtered.length - 1 && <Groove />}
                       </div>
