@@ -40,19 +40,22 @@ const LAST_UPDATED = "March 2026";
 // DESIGN TOKENS
 // ─────────────────────────────────────────────────────────────────────────────
 const T = {
-  bg:         "#c8b89a",
-  paper:      "#d4c4a8",
-  cream:      "#ede0c4",
-  ink:        "#2a1f14",
-  inkLight:   "#4a3828",
+  bg:         "#c4b395",
+  paper:      "#d0bf9e",
+  cream:      "#ece0c2",
+  ink:        "#1e160c",
+  inkLight:   "#3d2e1e",
   accent:     "#7ec8d8",
   accentDk:   "#5ab5c8",
   accentPale: "#d8eef3",
-  groove:     "#b8a488",
-  grooveLt:   "#cec0a8",
-  stamp:      "#6b4c1e",
+  royal:      "#3d5a9e",
+  royalDk:    "#2c4180",
+  royalPale:  "#dce4f5",
+  groove:     "#b0997a",
+  grooveLt:   "#c8b898",
+  stamp:      "#5e3f18",
   red:        "#8b2020",
-  title:      "#f0ece4",
+  title:      "#f4efe6",
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -360,7 +363,7 @@ const ConcertModal = ({ concert, onClose, onSave }) => {
             <div style={{ color: T.accent, fontSize: "10px", letterSpacing: "3px", textTransform: "uppercase", fontFamily: "'Outfit', sans-serif" }}>♪ NEW ENTRY</div>
             <h2 style={{ fontFamily: "'Fraunces', serif", fontSize: "22px", color: T.ink, margin: "4px 0 0" }}>{concert?.id ? "Edit Record" : "Press a Record"}</h2>
           </div>
-          <button onClick={onClose} style={{ background: "none", border: "none", color: T.groove, cursor: "pointer" }}><Sym>■</Sym></button>
+          <button onClick={onClose} style={{ background: "none", border: "none", color: T.groove, cursor: "pointer" }}>×</button>
         </div>
         <div style={{ display: "grid", gap: "16px" }}>
           <div>
@@ -396,7 +399,7 @@ const ConcertModal = ({ concert, onClose, onSave }) => {
           <div><label style={S.label}>Photos</label><MediaStrip media={f.media} onAdd={addMedia} onRemove={removeMedia} /></div>
         </div>
         <div style={{ display: "flex", gap: "10px", marginTop: "24px", borderTop: `1px solid ${T.groove}`, paddingTop: "20px" }}>
-          <button onClick={onClose} style={{ flex: 1, padding: "11px", background: "transparent", border: `1.5px solid ${T.groove}`, borderRadius: "3px", color: T.stamp, cursor: "pointer", fontSize: "13px", fontFamily: "'Outfit', sans-serif" }}><Sym>■</Sym> Cancel</button>
+          <button onClick={onClose} style={{ flex: 1, padding: "11px", background: "transparent", border: `1.5px solid ${T.groove}`, borderRadius: "3px", color: T.stamp, cursor: "pointer", fontSize: "13px", fontFamily: "'Outfit', sans-serif" }}>× Cancel</button>
           <button onClick={handleSave} disabled={saving || !f.artist.trim()}
             style={{ flex: 2, padding: "11px", background: T.ink, border: "none", borderRadius: "3px", color: T.cream, cursor: "pointer", fontSize: "13px", fontWeight: "700", fontFamily: "'Fraunces', serif", opacity: f.artist.trim() && !saving ? 1 : 0.4 }}>
             <Sym>▶</Sym> {saving ? "Saving…" : concert?.id ? "Save Changes" : "Press It"}
@@ -430,7 +433,7 @@ const SleeveModal = ({ concert, onClose, isOwn, onEdit }) => {
             <NoteRating v={concert.rating} size="lg" />
             {concert.genre && <GenreSticker genre={concert.genre} />}
           </div>
-          <button onClick={onClose} style={{ position: "absolute", top: 20, right: 20, background: "none", border: "none", color: T.groove, cursor: "pointer" }}><Sym>■</Sym></button>
+          <button onClick={onClose} style={{ position: "absolute", top: 20, right: 20, background: "none", border: "none", color: T.groove, cursor: "pointer" }}>×</button>
         </div>
         <div style={{ padding: "32px 40px" }}>
           {concert.review && (
@@ -468,7 +471,7 @@ const SleeveModal = ({ concert, onClose, isOwn, onEdit }) => {
             </>
           )}
           <div style={{ display: "flex", gap: "10px", marginTop: "24px", borderTop: `1px solid ${T.groove}`, paddingTop: "20px" }}>
-            <button onClick={onClose} style={{ flex: 1, padding: "11px", background: "transparent", border: `1.5px solid ${T.groove}`, borderRadius: "3px", color: T.stamp, cursor: "pointer", fontSize: "13px", fontFamily: "'Outfit', sans-serif" }}><Sym>■</Sym> Close</button>
+            <button onClick={onClose} style={{ flex: 1, padding: "11px", background: "transparent", border: `1.5px solid ${T.groove}`, borderRadius: "3px", color: T.stamp, cursor: "pointer", fontSize: "13px", fontFamily: "'Outfit', sans-serif" }}>× Close</button>
             {isOwn && (
               <button onClick={() => { onClose(); onEdit(concert); }}
                 style={{ flex: 1, padding: "11px", background: T.ink, border: "none", borderRadius: "3px", color: T.cream, cursor: "pointer", fontSize: "13px", fontFamily: "'Outfit', sans-serif" }}>
@@ -485,7 +488,7 @@ const SleeveModal = ({ concert, onClose, isOwn, onEdit }) => {
 // ─────────────────────────────────────────────────────────────────────────────
 // TICKET STUB
 // ─────────────────────────────────────────────────────────────────────────────
-const TicketStub = ({ concert, onEdit, onDelete, onOpen, showOwner, ownerName, ownerHandle, ownerProfile, isEncore, onOwnerClick }) => {
+const TicketStub = ({ concert, onEdit, onDelete, onOpen, showOwner, ownerName, ownerHandle, ownerProfile, isEncore, onOwnerClick, onArtistClick, onVenueClick }) => {
   const [hov, setHov] = useState(false);
   const { month, day, year } = fmtDate(concert.date);
   const mediaCount = concert.media?.length || 0;
@@ -496,20 +499,22 @@ const TicketStub = ({ concert, onEdit, onDelete, onOpen, showOwner, ownerName, o
       onClick={() => onOpen(concert)}
       style={{
         display: "flex", cursor: "pointer",
-        border: `1.5px solid ${isEncore ? T.accent : T.inkLight}`,
+        border: `1.5px solid ${isEncore ? T.royal : T.inkLight}`,
         borderRadius: "3px", overflow: "hidden", transition: "transform .15s, box-shadow .15s",
         transform: hov ? "translateY(-2px)" : "none",
-        boxShadow: hov ? `4px 4px 0 ${T.accent}` : `3px 3px 0 ${T.groove}`,
+        boxShadow: hov ? `4px 4px 0 ${T.accent}` : `2px 2px 0 ${T.groove}`,
         background: T.cream,
       }}>
-      <div style={{ background: T.ink, width: 68, minWidth: 68, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "14px 6px", position: "relative" }}>
+      {/* Date column */}
+      <div style={{ background: T.ink, width: 64, minWidth: 64, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "14px 6px", position: "relative" }}>
         <div style={{ position: "absolute", right: 0, top: 0, bottom: 0, width: "1px", background: `repeating-linear-gradient(to bottom, ${T.groove} 0, ${T.groove} 4px, transparent 4px, transparent 8px)` }} />
         <div style={{ color: T.accent, fontSize: "9px", fontWeight: "700", letterSpacing: "2px", fontFamily: "'Outfit', sans-serif" }}>{month}</div>
-        <div style={{ color: T.title, fontSize: "28px", fontFamily: "'Fraunces', serif", fontWeight: "900", lineHeight: 1 }}>{day}</div>
+        <div style={{ color: T.title, fontSize: "26px", fontFamily: "'Fraunces', serif", fontWeight: "900", lineHeight: 1 }}>{day}</div>
         <div style={{ color: T.groove, fontSize: "9px", fontFamily: "'Outfit', sans-serif" }}>{year}</div>
-        <div style={{ color: T.accent, fontSize: "16px", marginTop: "6px" }}>♪</div>
+        <div style={{ color: T.accent, fontSize: "14px", marginTop: "6px" }}>\u266a</div>
       </div>
-      <div style={{ flex: 1, padding: "14px 18px", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+      {/* Main content */}
+      <div style={{ flex: 1, padding: "13px 16px", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
         <div>
           {showOwner && (
             <div
@@ -518,14 +523,32 @@ const TicketStub = ({ concert, onEdit, onDelete, onOpen, showOwner, ownerName, o
               <AvatarImg profile={ownerProfile} size={18} />
               <span style={{ fontWeight: "700" }}>{ownerName}</span>
               <span style={{ color: T.grooveLt }}>{ownerHandle}</span>
-              {onOwnerClick && <span style={{ color: T.accent, fontSize: "9px" }}>↗</span>}
+              {onOwnerClick && <span style={{ color: T.accent, fontSize: "9px" }}>\u2197</span>}
             </div>
           )}
           {isEncore && (
-            <div style={{ color: T.accent, fontSize: "9px", fontFamily: "'Outfit', sans-serif", letterSpacing: "2px", textTransform: "uppercase", marginBottom: "2px" }}>★ Encore List</div>
+            <div style={{ color: T.royal, fontSize: "8px", fontFamily: "'Outfit', sans-serif", letterSpacing: "2.5px", textTransform: "uppercase", marginBottom: "3px", fontWeight: "700" }}>\u2605 Encore List</div>
           )}
-          <div style={{ color: T.ink, fontSize: "19px", fontFamily: "'Fraunces', serif", fontWeight: "700", lineHeight: 1.15 }}>{concert.artist}</div>
-          <div style={{ color: T.stamp, fontSize: "12px", fontFamily: "'Outfit', sans-serif", marginTop: "3px" }}>{[concert.venue, concert.city].filter(Boolean).join(" · ")}</div>
+          {/* Artist — clickable */}
+          <div
+            onClick={onArtistClick ? (e) => { e.stopPropagation(); onArtistClick(concert.artist); } : undefined}
+            style={{ color: T.ink, fontSize: "19px", fontFamily: "'Fraunces', serif", fontWeight: "700", lineHeight: 1.15, cursor: onArtistClick ? "pointer" : "default", display: "inline-block" }}
+            title={onArtistClick ? `View ${concert.artist} profile` : undefined}>
+            {concert.artist}
+            {onArtistClick && <span style={{ color: T.accent, fontSize: "10px", marginLeft: "5px" }}>\u2197</span>}
+          </div>
+          {/* Venue + city — venue clickable */}
+          <div style={{ color: T.stamp, fontSize: "12px", fontFamily: "'Outfit', sans-serif", marginTop: "3px" }}>
+            {concert.venue && (
+              <span
+                onClick={onVenueClick ? (e) => { e.stopPropagation(); onVenueClick(concert.venue); } : undefined}
+                style={{ cursor: onVenueClick ? "pointer" : "default", borderBottom: onVenueClick ? `1px dotted ${T.stamp}` : "none" }}>
+                {concert.venue}
+              </span>
+            )}
+            {concert.venue && concert.city && <span> \u00b7 </span>}
+            {concert.city && <span>{concert.city}</span>}
+          </div>
         </div>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: "10px", flexWrap: "wrap", gap: "6px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
@@ -533,17 +556,17 @@ const TicketStub = ({ concert, onEdit, onDelete, onOpen, showOwner, ownerName, o
             {concert.genre && <GenreSticker genre={concert.genre} />}
           </div>
           <div style={{ display: "flex", gap: "10px", color: T.groove, fontSize: "11px", fontFamily: "'Outfit', sans-serif" }}>
-            {concert.setlist?.length > 0 && <span>♪ {concert.setlist.length} tracks</span>}
-            {mediaCount > 0 && <span>◈ {mediaCount}</span>}
-            {concert.review && <span>✍</span>}
+            {concert.setlist?.length > 0 && <span>\u266a {concert.setlist.length} tracks</span>}
+            {mediaCount > 0 && <span>\u25c6 {mediaCount}</span>}
+            {concert.review && <span>\u2014</span>}
           </div>
         </div>
       </div>
       {(onEdit || onDelete) && (
         <div onClick={e => e.stopPropagation()}
           style={{ background: T.paper, borderLeft: `1px dashed ${T.groove}`, width: 40, minWidth: 40, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "14px", opacity: hov ? 1 : 0, transition: "opacity .2s" }}>
-          <button onClick={() => onEdit(concert)} style={{ background: "none", border: "none", color: T.stamp, cursor: "pointer", padding: "4px" }}><Sym>▶</Sym></button>
-          <button onClick={() => onDelete(concert.id)} style={{ background: "none", border: "none", color: T.red, cursor: "pointer", padding: "4px" }}><Sym>■</Sym></button>
+          <button onClick={() => onEdit(concert)} style={{ background: "none", border: "none", color: T.stamp, cursor: "pointer", padding: "4px", fontSize: "13px" }}>\u25b8</button>
+          <button onClick={() => onDelete(concert.id)} style={{ background: "none", border: "none", color: T.red, cursor: "pointer", padding: "4px", fontSize: "13px" }}>\u00d7</button>
         </div>
       )}
     </div>
@@ -556,18 +579,18 @@ const TicketStub = ({ concert, onEdit, onDelete, onOpen, showOwner, ownerName, o
 const EncoreListSection = ({ concerts, encoreList, onOpen, onToggleEncore, isOwn }) => {
   const encoreConcerts = concerts.filter(c => encoreList?.map(String).includes(String(c.id)));
   return (
-    <div style={{ background: T.paper, border: `2px solid ${T.accent}`, borderRadius: "4px", padding: "24px", marginBottom: "28px" }}>
+    <div style={{ background: T.royalPale, border: `2px solid ${T.royal}`, borderRadius: "4px", padding: "24px", marginBottom: "28px" }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "18px" }}>
         <div>
-          <div style={{ color: T.accent, fontSize: "10px", letterSpacing: "3px", textTransform: "uppercase", fontFamily: "'Outfit', sans-serif", marginBottom: "4px" }}>★ All-Time</div>
-          <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: "22px", color: T.ink, margin: 0, fontStyle: "italic" }}>The Encore List</h3>
+          <div style={{ color: T.royal, fontSize: "9px", letterSpacing: "4px", textTransform: "uppercase", fontFamily: "'Outfit', sans-serif", marginBottom: "5px", fontWeight: "700", borderBottom: `1px solid ${T.royalDk}`, paddingBottom: "4px", display: "inline-block" }}>All-Time Favourites</div>
+          <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: "22px", color: T.ink, margin: "6px 0 0", fontStyle: "italic" }}>The Encore List</h3>
         </div>
-        <div style={{ color: T.groove, fontSize: "11px", fontFamily: "'Outfit', sans-serif" }}>{encoreConcerts.length} / 3</div>
+        <div style={{ color: T.royal, fontSize: "11px", fontFamily: "'Outfit', sans-serif", fontWeight: "700", opacity: 0.7 }}>{encoreConcerts.length} / 3</div>
       </div>
       {encoreConcerts.length === 0 ? (
-        <div style={{ textAlign: "center", padding: "24px", color: T.groove, fontFamily: "'Outfit', sans-serif", fontSize: "13px", fontStyle: "italic", border: `1px dashed ${T.groove}`, borderRadius: "3px" }}>
+        <div style={{ textAlign: "center", padding: "24px", color: T.royal, fontFamily: "'Outfit', sans-serif", fontSize: "13px", fontStyle: "italic", border: `1px dashed ${T.royal}`, borderRadius: "3px", opacity: 0.7 }}>
           {isOwn
-            ? "Add up to 3 all-time favourite shows — hover a show below and click ★ to add it here."
+            ? "Add up to 3 all-time favourite shows \u2014 hover a show and click \u2605 to add it here."
             : "No shows added to the Encore List yet."}
         </div>
       ) : (
@@ -575,10 +598,10 @@ const EncoreListSection = ({ concerts, encoreList, onOpen, onToggleEncore, isOwn
           {encoreConcerts.map((c, i) => (
             <div key={c.id}>
               <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                <div style={{ color: T.accent, fontFamily: "'Fraunces', serif", fontSize: "28px", fontWeight: "900", minWidth: "32px", textAlign: "center", lineHeight: 1 }}>{i + 1}</div>
+                <div style={{ color: T.royal, fontFamily: "'Fraunces', serif", fontSize: "28px", fontWeight: "900", minWidth: "32px", textAlign: "center", lineHeight: 1 }}>{i + 1}</div>
                 <div style={{ flex: 1 }}><TicketStub concert={c} onOpen={onOpen} isEncore /></div>
                 {isOwn && (
-                  <button onClick={() => onToggleEncore(c.id)} style={{ background: "none", border: "none", color: T.accent, cursor: "pointer", fontSize: "18px", padding: "4px" }}>★</button>
+                  <button onClick={() => onToggleEncore(c.id)} style={{ background: "none", border: "none", color: T.royal, cursor: "pointer", fontSize: "18px", padding: "4px" }}>\u2605</button>
                 )}
               </div>
               {i < encoreConcerts.length - 1 && <Groove />}
@@ -591,7 +614,134 @@ const EncoreListSection = ({ concerts, encoreList, onOpen, onToggleEncore, isOwn
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// PROFILE MODAL (other users)
+// ARTIST PAGE
+// ─────────────────────────────────────────────────────────────────────────────
+const ArtistPage = ({ artistName, allConcerts, allUsers, onClose }) => {
+  const concerts = allConcerts.filter(c => (c.artist||"").toLowerCase() === artistName.toLowerCase());
+  const listeners = allUsers.filter(u => u.concerts.some(c => (c.artist||"").toLowerCase() === artistName.toLowerCase()));
+  const avgRating = concerts.length ? (concerts.reduce((s,c) => s + (c.rating||0), 0) / concerts.length).toFixed(1) : "\u2014";
+  const topCity = (() => { const ct = {}; concerts.forEach(c => { if (c.city) ct[c.city] = (ct[c.city]||0)+1; }); return Object.entries(ct).sort((a,b)=>b[1]-a[1])[0]?.[0] || "\u2014"; })();
+  const topGenre = (() => { const ct = {}; concerts.forEach(c => { if (c.genre) ct[c.genre] = (ct[c.genre]||0)+1; }); return Object.entries(ct).sort((a,b)=>b[1]-a[1])[0]?.[0] || "\u2014"; })();
+  const [sleeve, setSleeve] = useState(null);
+  return (
+    <div style={{ position: "fixed", inset: 0, zIndex: 300, background: T.bg, display: "flex", flexDirection: "column", overflowY: "auto" }}>
+      <div style={{ background: T.ink, padding: "0 32px", position: "sticky", top: 0, zIndex: 10, borderBottom: `3px solid ${T.accent}` }}>
+        <div style={{ maxWidth: "760px", margin: "0 auto", padding: "18px 0", display: "flex", alignItems: "center", gap: "16px" }}>
+          <button onClick={onClose} style={{ background: "transparent", border: `1px solid ${T.groove}`, color: T.groove, borderRadius: "3px", padding: "7px 14px", cursor: "pointer", fontSize: "9px", letterSpacing: "2.5px", textTransform: "uppercase", fontFamily: "'Outfit', sans-serif" }}>\u2190 Back</button>
+          <div style={{ color: T.groove, fontSize: "9px", letterSpacing: "3px", textTransform: "uppercase", fontFamily: "'Outfit', sans-serif" }}>Artist Profile</div>
+        </div>
+      </div>
+      <div style={{ background: T.ink, padding: "0 32px 44px" }}>
+        <div style={{ maxWidth: "760px", margin: "0 auto" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "4px", marginBottom: "24px", paddingTop: "8px" }}>
+            {[0.05,0.09,0.06].map((op,i) => <div key={i} style={{ height:"1px", background:`rgba(126,200,216,${op})` }} />)}
+          </div>
+          <div style={{ display: "flex", alignItems: "flex-end", gap: "28px", flexWrap: "wrap" }}>
+            <svg viewBox="0 0 100 100" width="90" height="90" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="50" cy="50" r="48" fill="#111" />
+              {[42,36,30,24,18].map((r,i) => <circle key={i} cx="50" cy="50" r={r} fill="none" stroke="#2a2a2a" strokeWidth="1.2" />)}
+              <circle cx="50" cy="50" r="14" fill={T.royal} />
+              <text x="50" y="53" textAnchor="middle" fill={T.title} fontSize="5" fontFamily="serif" fontWeight="bold">RECORD</text>
+              <circle cx="50" cy="50" r="2" fill="#111" />
+            </svg>
+            <div style={{ flex: 1 }}>
+              <div style={{ color: T.accent, fontSize: "9px", letterSpacing: "4px", textTransform: "uppercase", fontFamily: "'Outfit', sans-serif", marginBottom: "8px" }}>\u266a Artist</div>
+              <h1 style={{ color: T.title, fontFamily: "'Fraunces', serif", fontSize: "clamp(28px,6vw,52px)", fontWeight: "900", letterSpacing: "-1.5px", lineHeight: 0.95, margin: 0 }}>{artistName}</h1>
+              <div style={{ color: T.groove, fontSize: "12px", fontFamily: "'Outfit', sans-serif", marginTop: "10px" }}>{concerts.length} show{concerts.length !== 1 ? "s" : ""} logged \u00b7 {listeners.length} listener{listeners.length !== 1 ? "s" : ""}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style={{ maxWidth: "760px", width: "100%", margin: "0 auto", padding: "32px 32px 60px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px", marginBottom: "32px" }}>
+          <div style={{ background: T.cream, border: `1.5px solid ${T.groove}`, borderRadius: "4px", padding: "20px" }}>
+            <div style={{ color: T.stamp, fontSize: "9px", letterSpacing: "3px", textTransform: "uppercase", fontFamily: "'Outfit', sans-serif", marginBottom: "16px", fontWeight: "700" }}>Stats</div>
+            {[{label:"Total Logs",value:concerts.length},{label:"Avg Rating",value:avgRating},{label:"Top City",value:topCity},{label:"Top Genre",value:topGenre}].map(s => (
+              <div key={s.label} style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", padding: "8px 0", borderBottom: `1px solid ${T.grooveLt}` }}>
+                <span style={{ color: T.stamp, fontSize: "11px", fontFamily: "'Outfit', sans-serif" }}>{s.label}</span>
+                <span style={{ color: T.ink, fontFamily: "'Fraunces', serif", fontSize: "16px", fontWeight: "700" }}>{s.value}</span>
+              </div>
+            ))}
+          </div>
+          <div style={{ background: T.cream, border: `1.5px solid ${T.groove}`, borderRadius: "4px", padding: "20px" }}>
+            <div style={{ color: T.stamp, fontSize: "9px", letterSpacing: "3px", textTransform: "uppercase", fontFamily: "'Outfit', sans-serif", marginBottom: "16px", fontWeight: "700" }}>Listeners who've been</div>
+            {listeners.length === 0 ? <div style={{ color: T.groove, fontSize: "12px", fontFamily: "'Outfit', sans-serif", fontStyle: "italic" }}>None yet.</div> : (
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+                {listeners.map(u => <div key={u.id} title={u.display_name||u.username}><AvatarImg profile={u} size={36} /></div>)}
+              </div>
+            )}
+          </div>
+        </div>
+        <div style={{ color: T.stamp, fontSize: "9px", letterSpacing: "3px", textTransform: "uppercase", fontFamily: "'Outfit', sans-serif", marginBottom: "14px", fontWeight: "700" }}>\u266b All Shows Logged</div>
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          {concerts.map((c,i) => <div key={c.id||i}><TicketStub concert={c} onOpen={setSleeve} showOwner={!!c._owner} ownerName={c._owner?.display_name||c._owner?.username} ownerHandle={c._owner?`@${c._owner.username}`:""} ownerProfile={c._owner} />{i<concerts.length-1&&<Groove />}</div>)}
+        </div>
+      </div>
+      {sleeve && <SleeveModal concert={sleeve} onClose={() => setSleeve(null)} isOwn={false} onEdit={() => {}} />}
+    </div>
+  );
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// VENUE PAGE
+// ─────────────────────────────────────────────────────────────────────────────
+const VenuePage = ({ venueName, allConcerts, allUsers, onClose }) => {
+  const concerts = allConcerts.filter(c => (c.venue||"").toLowerCase() === venueName.toLowerCase());
+  const listeners = allUsers.filter(u => u.concerts.some(c => (c.venue||"").toLowerCase() === venueName.toLowerCase()));
+  const avgRating = concerts.length ? (concerts.reduce((s,c) => s + (c.rating||0), 0) / concerts.length).toFixed(1) : "\u2014";
+  const topArtist = (() => { const ct = {}; concerts.forEach(c => { if (c.artist) ct[c.artist] = (ct[c.artist]||0)+1; }); return Object.entries(ct).sort((a,b)=>b[1]-a[1])[0]?.[0] || "\u2014"; })();
+  const city = concerts[0]?.city || "\u2014";
+  const [sleeve, setSleeve] = useState(null);
+  return (
+    <div style={{ position: "fixed", inset: 0, zIndex: 300, background: T.bg, display: "flex", flexDirection: "column", overflowY: "auto" }}>
+      <div style={{ background: T.ink, padding: "0 32px", position: "sticky", top: 0, zIndex: 10, borderBottom: `3px solid ${T.accent}` }}>
+        <div style={{ maxWidth: "760px", margin: "0 auto", padding: "18px 0", display: "flex", alignItems: "center", gap: "16px" }}>
+          <button onClick={onClose} style={{ background: "transparent", border: `1px solid ${T.groove}`, color: T.groove, borderRadius: "3px", padding: "7px 14px", cursor: "pointer", fontSize: "9px", letterSpacing: "2.5px", textTransform: "uppercase", fontFamily: "'Outfit', sans-serif" }}>\u2190 Back</button>
+          <div style={{ color: T.groove, fontSize: "9px", letterSpacing: "3px", textTransform: "uppercase", fontFamily: "'Outfit', sans-serif" }}>Venue Profile</div>
+        </div>
+      </div>
+      <div style={{ background: T.ink, padding: "0 32px 44px" }}>
+        <div style={{ maxWidth: "760px", margin: "0 auto" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "4px", marginBottom: "24px", paddingTop: "8px" }}>
+            {[0.05,0.09,0.06].map((op,i) => <div key={i} style={{ height:"1px", background:`rgba(126,200,216,${op})` }} />)}
+          </div>
+          <div style={{ color: T.accent, fontSize: "9px", letterSpacing: "4px", textTransform: "uppercase", fontFamily: "'Outfit', sans-serif", marginBottom: "8px" }}>\u25cf Venue</div>
+          <h1 style={{ color: T.title, fontFamily: "'Fraunces', serif", fontSize: "clamp(28px,6vw,52px)", fontWeight: "900", letterSpacing: "-1.5px", lineHeight: 0.95, margin: 0 }}>{venueName}</h1>
+          <div style={{ color: T.groove, fontSize: "12px", fontFamily: "'Outfit', sans-serif", marginTop: "10px" }}>{city} \u00b7 {concerts.length} show{concerts.length !== 1 ? "s" : ""} \u00b7 {listeners.length} listener{listeners.length !== 1 ? "s" : ""}</div>
+        </div>
+      </div>
+      <div style={{ maxWidth: "760px", width: "100%", margin: "0 auto", padding: "32px 32px 60px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px", marginBottom: "32px" }}>
+          <div style={{ background: T.cream, border: `1.5px solid ${T.groove}`, borderRadius: "4px", padding: "20px" }}>
+            <div style={{ color: T.stamp, fontSize: "9px", letterSpacing: "3px", textTransform: "uppercase", fontFamily: "'Outfit', sans-serif", marginBottom: "16px", fontWeight: "700" }}>Stats</div>
+            {[{label:"Total Shows",value:concerts.length},{label:"Avg Rating",value:avgRating},{label:"City",value:city},{label:"Top Artist",value:topArtist}].map(s => (
+              <div key={s.label} style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", padding: "8px 0", borderBottom: `1px solid ${T.grooveLt}` }}>
+                <span style={{ color: T.stamp, fontSize: "11px", fontFamily: "'Outfit', sans-serif" }}>{s.label}</span>
+                <span style={{ color: T.ink, fontFamily: "'Fraunces', serif", fontSize: "16px", fontWeight: "700" }}>{s.value}</span>
+              </div>
+            ))}
+          </div>
+          <div style={{ background: T.cream, border: `1.5px solid ${T.groove}`, borderRadius: "4px", padding: "20px" }}>
+            <div style={{ color: T.stamp, fontSize: "9px", letterSpacing: "3px", textTransform: "uppercase", fontFamily: "'Outfit', sans-serif", marginBottom: "16px", fontWeight: "700" }}>Listeners who've been</div>
+            {listeners.length === 0 ? <div style={{ color: T.groove, fontSize: "12px", fontFamily: "'Outfit', sans-serif", fontStyle: "italic" }}>None yet.</div> : (
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+                {listeners.map(u => <div key={u.id} title={u.display_name||u.username}><AvatarImg profile={u} size={36} /></div>)}
+              </div>
+            )}
+          </div>
+        </div>
+        <div style={{ color: T.stamp, fontSize: "9px", letterSpacing: "3px", textTransform: "uppercase", fontFamily: "'Outfit', sans-serif", marginBottom: "14px", fontWeight: "700" }}>\u266b All Shows Here</div>
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          {concerts.map((c,i) => <div key={c.id||i}><TicketStub concert={c} onOpen={setSleeve} showOwner={!!c._owner} ownerName={c._owner?.display_name||c._owner?.username} ownerHandle={c._owner?`@${c._owner.username}`:""} ownerProfile={c._owner} />{i<concerts.length-1&&<Groove />}</div>)}
+        </div>
+      </div>
+      {sleeve && <SleeveModal concert={sleeve} onClose={() => setSleeve(null)} isOwn={false} onEdit={() => {}} />}
+    </div>
+  );
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PROFILE PAGE (other users)
 // ─────────────────────────────────────────────────────────────────────────────
 const ProfilePage = ({ user, onClose, onToggleFollow, onLogConcert }) => {
   const [sleeve, setSleeve] = useState(null);
@@ -614,7 +764,7 @@ const ProfilePage = ({ user, onClose, onToggleFollow, onLogConcert }) => {
           <div style={{ flex: 1 }} />
           <button onClick={() => onToggleFollow(user.id)}
             style={{ background: user.following ? "transparent" : T.accent, border: user.following ? `1.5px solid ${T.groove}` : "none", color: user.following ? T.groove : T.ink, borderRadius: "2px", padding: "8px 18px", cursor: "pointer", fontSize: "11px", fontWeight: "700", fontFamily: "'Outfit', sans-serif", letterSpacing: "1px" }}>
-            {user.following ? <><Sym>■</Sym> Unfollow</> : <><Sym>▶</Sym> Follow</>}
+            {user.following ? <>Unfollow</> : <><Sym>▶</Sym> Follow</>}
           </button>
         </div>
       </div>
@@ -716,7 +866,7 @@ const FindUsersModal = ({ onClose, users, onToggleFollow, onViewProfile }) => {
             <div style={{ color: T.accent, fontSize: "10px", letterSpacing: "3px", textTransform: "uppercase", fontFamily: "'Outfit', sans-serif" }}>♪ FIND LISTENERS</div>
             <h2 style={{ color: T.title, fontFamily: "'Fraunces', serif", fontSize: "20px", margin: "4px 0 0" }}>Search the Collection</h2>
           </div>
-          <button onClick={onClose} style={{ background: "none", border: "none", color: T.groove, cursor: "pointer" }}><Sym>■</Sym></button>
+          <button onClick={onClose} style={{ background: "none", border: "none", color: T.groove, cursor: "pointer" }}>×</button>
         </div>
         <div style={{ padding: "20px 28px" }}>
           <input style={S.input} value={q} onChange={e => setQ(e.target.value)} placeholder="♪  Search by name or @handle…" autoFocus />
@@ -730,7 +880,7 @@ const FindUsersModal = ({ onClose, users, onToggleFollow, onViewProfile }) => {
                 </div>
                 <button onClick={() => onToggleFollow(u.id)}
                   style={{ background: u.following ? "transparent" : T.ink, border: u.following ? `1px solid ${T.groove}` : "none", color: u.following ? T.stamp : T.cream, borderRadius: "3px", padding: "6px 12px", cursor: "pointer", fontSize: "11px", fontWeight: "700", fontFamily: "'Outfit', sans-serif", whiteSpace: "nowrap" }}>
-                  {u.following ? <><Sym>■</Sym> Unfollow</> : <><Sym>▶</Sym> Follow</>}
+                  {u.following ? <>Unfollow</> : <><Sym>▶</Sym> Follow</>}
                 </button>
               </div>
             ))}
@@ -808,7 +958,7 @@ const GlobalSearchPanel = ({ query, allConcerts, allUsers, onOpenConcert, onOpen
                       fontSize: "10px", fontWeight: "700", fontFamily: "'Outfit', sans-serif",
                       letterSpacing: "1px", whiteSpace: "nowrap", transition: "all .2s",
                     }}>
-                    {u.following ? <><Sym>■</Sym> Unfollow</> : <><Sym>▶</Sym> Follow</>}
+                    {u.following ? <>Unfollow</> : <><Sym>▶</Sym> Follow</>}
                   </button>
                 </div>
               ))}
@@ -857,7 +1007,7 @@ const LegalModal = ({ title, sections, onClose }) => (
           <div style={{ color: T.accent, fontSize: "10px", letterSpacing: "3px", textTransform: "uppercase", fontFamily: "'Outfit', sans-serif" }}>♪ Legal</div>
           <h2 style={{ color: T.title, fontFamily: "'Fraunces', serif", fontSize: "22px", margin: "4px 0 0" }}>{title}</h2>
         </div>
-        <button onClick={onClose} style={{ background: "none", border: "none", color: T.groove, cursor: "pointer", fontFamily: "'Outfit', sans-serif", fontSize: "13px" }}><Sym>■</Sym> Close</button>
+        <button onClick={onClose} style={{ background: "none", border: "none", color: T.groove, cursor: "pointer", fontFamily: "'Outfit', sans-serif", fontSize: "13px" }}>× Close</button>
       </div>
       <div style={{ padding: "32px", fontFamily: "'Outfit', sans-serif", color: T.ink, lineHeight: 1.8 }}>
         <p style={{ color: T.stamp, fontSize: "12px", marginBottom: "28px" }}>Last updated: {LAST_UPDATED}</p>
@@ -1201,7 +1351,7 @@ const FollowingModal = ({ users, onClose, onViewProfile, onToggleFollow }) => {
               {following.length} Listener{following.length !== 1 ? "s" : ""} You Follow
             </h2>
           </div>
-          <button onClick={onClose} style={{ background: "none", border: "none", color: T.groove, cursor: "pointer" }}><Sym>■</Sym></button>
+          <button onClick={onClose} style={{ background: "none", border: "none", color: T.groove, cursor: "pointer" }}>×</button>
         </div>
 
         {/* List */}
@@ -1229,7 +1379,7 @@ const FollowingModal = ({ users, onClose, onViewProfile, onToggleFollow }) => {
                 </div>
                 <button onClick={() => onToggleFollow(u.id)}
                   style={{ background: "transparent", border: `1.5px solid ${T.groove}`, color: T.stamp, borderRadius: "2px", padding: "6px 12px", cursor: "pointer", fontSize: "10px", fontWeight: "700", fontFamily: "'Outfit', sans-serif", letterSpacing: "1px", whiteSpace: "nowrap", transition: "all .2s", flexShrink: 0 }}>
-                  <Sym>■</Sym> Unfollow
+                  Unfollow
                 </button>
               </div>
             ))
@@ -1260,6 +1410,8 @@ export default function App() {
   const [modal, setModal]             = useState(null);
   const [sleeve, setSleeve]           = useState(null);
   const [profileView, setProfileView] = useState(null);
+  const [artistView, setArtistView]   = useState(null);
+  const [venueView, setVenueView]     = useState(null);
   const [showFindUsers, setShowFindUsers] = useState(false);
   const [showPrivacy, setShowPrivacy] = useState(false);
   const [showTerms, setShowTerms]     = useState(false);
@@ -1431,21 +1583,90 @@ export default function App() {
     ? (concerts.reduce((s,c) => s + (c.rating||0), 0) / concerts.length).toFixed(1)
     : "—";
 
-  // ── Tab styles ──
+  // ── Cardstock index-card tab styles ──
   const tabStyle = (t) => ({
-    padding: "8px 18px", cursor: "pointer", fontSize: "10px", letterSpacing: "2px",
-    textTransform: "uppercase", fontFamily: "'Outfit', sans-serif",
-    background: tab === t ? T.accent : "transparent",
-    color: tab === t ? T.ink : T.groove,
-    border: `1.5px solid ${tab === t ? T.accent : "rgba(255,255,255,.15)"}`,
-    borderRadius: "2px", fontWeight: "700", transition: "all .2s",
+    padding: tab === t ? "10px 22px 0" : "7px 20px 0",
+    paddingBottom: 0,
+    cursor: "pointer",
+    fontSize: "9px",
+    letterSpacing: "2.5px",
+    textTransform: "uppercase",
+    fontFamily: "'Outfit', sans-serif",
+    fontWeight: "700",
+    background: tab === t ? T.cream : T.paper,
+    color: tab === t ? T.ink : T.stamp,
+    border: `1.5px solid ${tab === t ? T.groove : T.grooveLt}`,
+    borderBottom: tab === t ? `1.5px solid ${T.cream}` : `1.5px solid ${T.groove}`,
+    borderRadius: "4px 4px 0 0",
+    position: "relative",
+    bottom: tab === t ? "-1.5px" : "0",
+    transition: "all .15s",
+    lineHeight: "32px",
+    whiteSpace: "nowrap",
+    boxShadow: tab === t ? `0 -2px 6px rgba(0,0,0,0.12)` : "none",
+    zIndex: tab === t ? 2 : 1,
   });
 
   if (authLoading) return (
-    <div style={{ minHeight: "100vh", background: T.ink, display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: "16px" }}>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,900;1,9..144,400&family=Outfit:wght@300;400;700&display=swap'); @keyframes spin { to { transform: rotate(360deg); } }`}</style>
-      <div style={{ color: T.title, fontFamily: "'Fraunces', serif", fontSize: "52px", fontWeight: "900", letterSpacing: "-2px" }}>Record</div>
-      <Spinner />
+    <div style={{ minHeight: "100vh", background: T.ink, display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: "32px" }}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,900;1,9..144,400&family=Outfit:wght@300;400;700&display=swap');
+        @keyframes spin-vinyl { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes needle-drop {
+          0%   { transform: rotate(-28deg); }
+          60%  { transform: rotate(-28deg); }
+          100% { transform: rotate(-6deg);  }
+        }
+        @keyframes fade-label { 0%,60% { opacity: 0; } 100% { opacity: 1; } }
+      `}</style>
+
+      {/* Vinyl + needle assembly */}
+      <div style={{ position: "relative", width: 200, height: 200 }}>
+        {/* Spinning record */}
+        <div style={{ width: 200, height: 200, borderRadius: "50%", animation: "spin-vinyl 1.8s linear infinite", position: "relative" }}>
+          <svg viewBox="0 0 200 200" width="200" height="200" xmlns="http://www.w3.org/2000/svg">
+            {/* Outer vinyl */}
+            <circle cx="100" cy="100" r="98" fill="#111" />
+            {/* Groove rings */}
+            {[88,78,68,58,48,40,33].map((r,i) => (
+              <circle key={i} cx="100" cy="100" r={r} fill="none" stroke="#2a2a2a" strokeWidth="1.5" />
+            ))}
+            {/* Label area */}
+            <circle cx="100" cy="100" r="28" fill={T.royal} />
+            {/* Label text lines */}
+            <text x="100" y="96" textAnchor="middle" fill={T.title} fontSize="9" fontFamily="serif" fontWeight="bold" style={{ animation: "fade-label 2s ease forwards" }}>RECORD</text>
+            <text x="100" y="107" textAnchor="middle" fill={T.accentPale} fontSize="6" fontFamily="sans-serif" opacity="0.8">A SIDE</text>
+            {/* Spindle hole */}
+            <circle cx="100" cy="100" r="4" fill="#111" />
+            {/* Sheen highlight */}
+            <ellipse cx="70" cy="60" rx="18" ry="8" fill="white" opacity="0.04" transform="rotate(-30 70 60)" />
+          </svg>
+        </div>
+
+        {/* Needle arm — pivots from top-right */}
+        <div style={{
+          position: "absolute", top: -18, right: -22,
+          width: 90, height: 90,
+          transformOrigin: "top right",
+          animation: "needle-drop 2s ease forwards",
+        }}>
+          <svg viewBox="0 0 90 90" width="90" height="90" xmlns="http://www.w3.org/2000/svg">
+            {/* Pivot dot */}
+            <circle cx="82" cy="8" r="6" fill={T.groove} />
+            {/* Arm */}
+            <line x1="82" y1="8" x2="22" y2="78" stroke={T.groove} strokeWidth="3" strokeLinecap="round" />
+            {/* Cartridge head */}
+            <rect x="14" y="72" width="14" height="8" rx="2" fill={T.grooveLt} transform="rotate(-40 14 72)" />
+            {/* Needle tip */}
+            <circle cx="16" cy="82" r="2.5" fill={T.accent} />
+          </svg>
+        </div>
+      </div>
+
+      <div style={{ textAlign: "center" }}>
+        <div style={{ color: T.title, fontFamily: "'Fraunces', serif", fontSize: "42px", fontWeight: "900", letterSpacing: "-2px", lineHeight: 1 }}>Record</div>
+        <div style={{ color: T.groove, fontFamily: "'Outfit', sans-serif", fontSize: "11px", letterSpacing: "4px", textTransform: "uppercase", marginTop: "8px" }}>Loading your collection&hellip;</div>
+      </div>
     </div>
   );
 
@@ -1541,7 +1762,7 @@ export default function App() {
       `}</style>
 
       {/* ── HEADER ── */}
-      <div style={{ background: T.ink, padding: "40px 32px 0", borderBottom: `4px solid ${T.accent}` }}>
+      <div style={{ background: T.ink, padding: "40px 32px 0" }}>
         <div style={{ maxWidth: "760px", margin: "0 auto" }}>
           {/* Groove decoration */}
           <div style={{ marginBottom: "22px", display: "flex", flexDirection: "column", gap: "4px" }}>
@@ -1632,25 +1853,25 @@ export default function App() {
             ))}
           </div>
 
-          {/* Tabs */}
-          <div style={{ display: "flex", gap: "8px", marginTop: "24px", paddingBottom: "0", flexWrap: "wrap" }}>
+          {/* Cardstock index-card tabs */}
+          <div style={{ display: "flex", gap: "4px", marginTop: "28px", alignItems: "flex-end", borderBottom: `1.5px solid ${T.groove}` }}>
             <button style={tabStyle("upcoming")} onClick={() => setTab("upcoming")}>
-              ♪ Upcoming
+              Upcoming
             </button>
             <button style={tabStyle("a-side")} onClick={() => setTab("a-side")}>
-              ▶ A-Side
+              A-Side
             </button>
-            {/* Spacer pushes B-Side to the right */}
             <div style={{ flex: 1 }} />
             <button style={tabStyle("b-side")} onClick={() => setTab("b-side")}>
-              ■ B-Side
+              B-Side
             </button>
           </div>
         </div>
       </div>
 
-      {/* ── MAIN CONTENT ── */}
-      <div style={{ flex: 1, maxWidth: "760px", width: "100%", margin: "0 auto", padding: "28px 32px 40px" }}>
+      {/* ── MAIN CONTENT SLEEVE ── */}
+      <div style={{ flex: 1, background: T.cream, borderTop: "none" }}>
+        <div style={{ maxWidth: "760px", width: "100%", margin: "0 auto", padding: "32px 32px 60px" }}>
 
         {/* ── UPCOMING ── */}
         {tab === "upcoming" && (
@@ -1668,25 +1889,24 @@ export default function App() {
         {tab === "a-side" && (
           <>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
-              <div style={{ color: T.stamp, fontSize: "12px", fontStyle: "italic" }}>
-                ♪ Recent shows from {users.filter(u => u.following).length} listeners you follow
+              <div style={{ color: T.stamp, fontSize: "12px", fontStyle: "italic", fontFamily: "'Outfit', sans-serif" }}>
+                Recent shows from {users.filter(u => u.following).length} listeners you follow
               </div>
               <button onClick={() => setShowFindUsers(true)}
-                style={{ background: T.ink, border: "none", color: T.cream, borderRadius: "2px", padding: "8px 16px", cursor: "pointer", fontSize: "10px", letterSpacing: "2px", textTransform: "uppercase", fontFamily: "'Outfit', sans-serif" }}>
-                ♪ Find Listeners
+                style={{ background: T.ink, border: "none", color: T.cream, borderRadius: "3px", padding: "8px 16px", cursor: "pointer", fontSize: "9px", letterSpacing: "2.5px", textTransform: "uppercase", fontFamily: "'Outfit', sans-serif", fontWeight: "700" }}>
+                Find Listeners
               </button>
             </div>
             {feed.length === 0 ? (
               <div style={{ textAlign: "center", padding: "80px 20px" }}>
-                <div style={{ fontSize: "52px", color: T.groove, marginBottom: "16px" }}>♫</div>
-                <div style={{ fontFamily: "'Fraunces', serif", fontSize: "22px", color: T.groove, marginBottom: "8px" }}>The listening room is quiet.</div>
-                <div style={{ fontSize: "13px", color: T.grooveLt, fontStyle: "italic" }}>Follow some listeners to hear what they've been to.</div>
+                <div style={{ fontSize: "42px", color: T.groove, marginBottom: "16px" }}>{"\u266b"}</div>
+                <div style={{ fontFamily: "'Fraunces', serif", fontSize: "22px", color: T.inkLight, marginBottom: "8px" }}>The listening room is quiet.</div>
+                <div style={{ fontSize: "13px", color: T.groove, fontStyle: "italic", fontFamily: "'Outfit', sans-serif" }}>Follow some listeners to hear what they've been to.</div>
               </div>
             ) : (
               <div style={{ display: "flex", flexDirection: "column" }}>
                 {feed.map((c, i) => (
                   <div key={c.id + c._owner.id}>
-                    {/* Feed ticket row — stub + copy button side by side */}
                     <div style={{ display: "flex", alignItems: "stretch", gap: "0" }}>
                       <div style={{ flex: 1 }}>
                         <TicketStub
@@ -1697,6 +1917,8 @@ export default function App() {
                           ownerHandle={`@${c._owner.username}`}
                           ownerProfile={c._owner}
                           onOwnerClick={() => setProfileView(c._owner)}
+                          onArtistClick={setArtistView}
+                          onVenueClick={setVenueView}
                         />
                       </div>
                       {/* + Log this show button */}
@@ -1765,6 +1987,8 @@ export default function App() {
                             onEdit={setModal}
                             onDelete={handleDelete}
                             isEncore={encoreList.map(String).includes(String(c.id))}
+                            onArtistClick={setArtistView}
+                            onVenueClick={setVenueView}
                           />
                           <button
                             onClick={() => toggleEncore(c.id)}
@@ -1777,10 +2001,10 @@ export default function App() {
                               background: "none", border: "none",
                               cursor: encoreList.length >= 3 && !encoreList.map(String).includes(String(c.id)) ? "not-allowed" : "pointer",
                               fontSize: "16px",
-                              color: encoreList.map(String).includes(String(c.id)) ? T.accent : T.groove,
+                              color: encoreList.map(String).includes(String(c.id)) ? T.royal : T.groove,
                               opacity: encoreList.length >= 3 && !encoreList.map(String).includes(String(c.id)) ? 0.3 : 1,
                               transition: "color .2s",
-                            }}>★</button>
+                            }}>{"\u2605"}</button>
                         </div>
                         {i < filtered.length - 1 && <Groove />}
                       </div>
@@ -1789,6 +2013,7 @@ export default function App() {
                 )}
           </>
         )}
+        </div>
       </div>
 
       <Footer onPrivacy={() => setShowPrivacy(true)} onTerms={() => setShowTerms(true)} />
@@ -1797,6 +2022,8 @@ export default function App() {
       {modal        && <ConcertModal concert={modal === "new" ? null : modal} onClose={() => setModal(null)} onSave={handleSave} />}
       {sleeve       && <SleeveModal concert={sleeve} onClose={() => setSleeve(null)} isOwn={authUser && !sleeve._owner} onEdit={(c) => { setSleeve(null); setModal(c); }} />}
       {profileView  && <ProfilePage user={profileView} onClose={() => setProfileView(null)} onToggleFollow={toggleFollow} onLogConcert={(c) => { setProfileView(null); setModal({ artist: c.artist, venue: c.venue, city: c.city, date: c.date, genre: c.genre, setlist: [], media: [], review: "", rating: 0 }); }} />}
+      {artistView   && <ArtistPage artistName={artistView} allConcerts={[...concerts.map(c => ({...c})), ...users.flatMap(u => u.concerts.map(c => ({...c, _owner: u})))]} allUsers={users} onClose={() => setArtistView(null)} />}
+      {venueView    && <VenuePage venueName={venueView} allConcerts={[...concerts.map(c => ({...c})), ...users.flatMap(u => u.concerts.map(c => ({...c, _owner: u})))]} allUsers={users} onClose={() => setVenueView(null)} />}
       {showFindUsers && <FindUsersModal onClose={() => setShowFindUsers(false)} users={users} onToggleFollow={toggleFollow} onViewProfile={(u) => { setProfileView(u); setShowFindUsers(false); }} />}
       {showFollowing && <FollowingModal users={users} onClose={() => setShowFollowing(false)} onViewProfile={setProfileView} onToggleFollow={toggleFollow} />}
       {showEditProfile && <EditProfileModal profile={profile} onClose={() => setShowEditProfile(false)} onSave={(updated) => setProfile(updated)} />}
