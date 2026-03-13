@@ -8,8 +8,8 @@ import { createClient } from "@supabase/supabase-js";
 //   REACT_APP_SUPABASE_ANON_KEY=your-anon-public-key
 // ─────────────────────────────────────────────────────────────────────────────
 const supabase = createClient(
-  process.env.REACT_APP_SUPABASE_URL,
-  process.env.REACT_APP_SUPABASE_TOKEN
+  "https://yhawkpdhjwzzffunorjm.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InloYXdrcGRoand6emZmdW5vcmptIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxNjg3MDQsImV4cCI6MjA4ODc0NDcwNH0.8C407bilajhjIf7vYvdeoSsciwtVPOrOcPNgWJg2Bjk"
 );
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -48,9 +48,9 @@ const T = {
   accent:     "#7ec8d8",
   accentDk:   "#5ab5c8",
   accentPale: "#d8eef3",
-  royal:      "#3d5a9e",
-  royalDk:    "#2c4180",
-  royalPale:  "#dce4f5",
+  royal:      "#8c6d3f",
+  royalDk:    "#6b4e28",
+  royalPale:  "#efe0c6",
   groove:     "#b0997a",
   grooveLt:   "#c8b898",
   stamp:      "#5e3f18",
