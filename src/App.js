@@ -16,6 +16,20 @@ const supabase = createClient(
 // CONSTANTS
 // ─────────────────────────────────────────────────────────────────────────────
 const GENRES = ["Rock","Pop","Hip-Hop","Jazz","Electronic","Alternative","Indie","R&B","Country","Classical","Metal","Psychedelic","Indie Folk","Industrial","Art Pop","Folk","Other"];
+
+// Profile avatar options — upload your own photo, or pick a music icon
+const AVATAR_ICONS = [
+  { id: "vinyl",    label: "Vinyl",       svg: `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><circle cx="20" cy="20" r="19" fill="#2a1f14"/><circle cx="20" cy="20" r="14" fill="none" stroke="#7ec8d8" stroke-width="1" opacity="0.4"/><circle cx="20" cy="20" r="10" fill="none" stroke="#7ec8d8" stroke-width="1" opacity="0.3"/><circle cx="20" cy="20" r="6" fill="none" stroke="#7ec8d8" stroke-width="1" opacity="0.5"/><circle cx="20" cy="20" r="2.5" fill="#7ec8d8"/></svg>` },
+  { id: "mic",      label: "Mic",         svg: `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><rect x="15" y="6" width="10" height="16" rx="5" fill="#7ec8d8"/><path d="M10 20a10 10 0 0 0 20 0" fill="none" stroke="#7ec8d8" stroke-width="2" stroke-linecap="round"/><line x1="20" y1="30" x2="20" y2="35" stroke="#7ec8d8" stroke-width="2"/><line x1="14" y1="35" x2="26" y2="35" stroke="#7ec8d8" stroke-width="2" stroke-linecap="round"/></svg>` },
+  { id: "guitar",   label: "Guitar",      svg: `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><line x1="10" y1="8" x2="30" y2="28" stroke="#7ec8d8" stroke-width="2"/><circle cx="27" cy="30" r="6" fill="none" stroke="#7ec8d8" stroke-width="2"/><circle cx="27" cy="30" r="2" fill="#7ec8d8"/><circle cx="12" cy="9" r="3" fill="none" stroke="#7ec8d8" stroke-width="1.5"/><line x1="8" y1="8" x2="16" y2="8" stroke="#7ec8d8" stroke-width="1.5"/></svg>` },
+  { id: "note",     label: "Note",        svg: `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><path d="M16 28V12l16-3v13" fill="none" stroke="#7ec8d8" stroke-width="2" stroke-linejoin="round"/><circle cx="13" cy="28" r="4" fill="none" stroke="#7ec8d8" stroke-width="2"/><circle cx="29" cy="22" r="4" fill="none" stroke="#7ec8d8" stroke-width="2"/></svg>` },
+  { id: "drum",     label: "Drums",       svg: `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><ellipse cx="20" cy="22" rx="14" ry="7" fill="none" stroke="#7ec8d8" stroke-width="2"/><rect x="6" y="22" width="28" height="8" rx="0" fill="none" stroke="#7ec8d8" stroke-width="2"/><ellipse cx="20" cy="22" rx="14" ry="7" fill="#2a1f14" opacity="0.6"/><line x1="14" y1="10" x2="18" y2="22" stroke="#7ec8d8" stroke-width="2" stroke-linecap="round"/><line x1="26" y1="10" x2="22" y2="22" stroke="#7ec8d8" stroke-width="2" stroke-linecap="round"/></svg>` },
+  { id: "tape",     label: "Cassette",    svg: `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><rect x="5" y="11" width="30" height="20" rx="3" fill="none" stroke="#7ec8d8" stroke-width="2"/><circle cx="14" cy="24" r="4" fill="none" stroke="#7ec8d8" stroke-width="1.5"/><circle cx="26" cy="24" r="4" fill="none" stroke="#7ec8d8" stroke-width="1.5"/><path d="M18 24 h4" stroke="#7ec8d8" stroke-width="1.5"/><rect x="12" y="14" width="16" height="6" rx="1" fill="none" stroke="#7ec8d8" stroke-width="1"/></svg>` },
+  { id: "wave",     label: "Sound Wave",  svg: `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><line x1="4"  y1="20" x2="4"  y2="20" stroke="#7ec8d8" stroke-width="2" stroke-linecap="round"/><line x1="9"  y1="15" x2="9"  y2="25" stroke="#7ec8d8" stroke-width="2" stroke-linecap="round"/><line x1="14" y1="10" x2="14" y2="30" stroke="#7ec8d8" stroke-width="2" stroke-linecap="round"/><line x1="19" y1="6"  x2="19" y2="34" stroke="#7ec8d8" stroke-width="2" stroke-linecap="round"/><line x1="24" y1="10" x2="24" y2="30" stroke="#7ec8d8" stroke-width="2" stroke-linecap="round"/><line x1="29" y1="15" x2="29" y2="25" stroke="#7ec8d8" stroke-width="2" stroke-linecap="round"/><line x1="34" y1="20" x2="34" y2="20" stroke="#7ec8d8" stroke-width="2" stroke-linecap="round"/></svg>` },
+  { id: "ticket",   label: "Ticket",      svg: `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><path d="M5 14h30v4a3 3 0 0 0 0 6v4H5v-4a3 3 0 0 1 0-6V14z" fill="none" stroke="#7ec8d8" stroke-width="2"/><line x1="15" y1="14" x2="15" y2="28" stroke="#7ec8d8" stroke-width="1.5" stroke-dasharray="2 2"/></svg>` },
+  { id: "piano",    label: "Piano",       svg: `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><rect x="5" y="12" width="30" height="20" rx="2" fill="none" stroke="#7ec8d8" stroke-width="2"/><line x1="5" y1="26" x2="35" y2="26" stroke="#7ec8d8" stroke-width="1"/><rect x="9"  y="12" width="4" height="9" rx="1" fill="#7ec8d8" opacity="0.8"/><rect x="16" y="12" width="4" height="9" rx="1" fill="#7ec8d8" opacity="0.8"/><rect x="23" y="12" width="4" height="9" rx="1" fill="#7ec8d8" opacity="0.8"/></svg>` },
+  { id: "star",     label: "Star",        svg: `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><polygon points="20,5 24,15 35,15 26,22 29,33 20,27 11,33 14,22 5,15 16,15" fill="none" stroke="#7ec8d8" stroke-width="2" stroke-linejoin="round"/></svg>` },
+];
 const APP_NAME = "Record";
 const APP_TAGLINE = "Every show, pressed to memory.";
 const APP_SUBTITLE = "A Live Music Journal for You & Your Friends";
@@ -57,7 +71,7 @@ const fmtDate = (d) => {
 
 const readFile = (file) => new Promise((res) => {
   const r = new FileReader();
-  r.onload = (e) => res({ url: e.target.result, type: file.type.startsWith("video/") ? "video" : "image", name: file.name });
+  r.onload = (e) => res({ url: e.target.result, type: "image", name: file.name });
   r.readAsDataURL(file);
 });
 
@@ -117,14 +131,37 @@ const Spinner = () => (
   </div>
 );
 
+// Renders either an uploaded photo or an SVG icon avatar
+const AvatarImg = ({ profile, size = 40 }) => {
+  if (profile?.avatar_url) {
+    return <img src={profile.avatar_url} alt="avatar" style={{ width: size, height: size, borderRadius: "50%", objectFit: "cover", border: `1.5px solid ${T.groove}`, flexShrink: 0 }} />;
+  }
+  const iconId = profile?.avatar_emoji && AVATAR_ICONS.some(a => a.id === profile.avatar_emoji) ? profile.avatar_emoji : null;
+  if (iconId) {
+    const icon = AVATAR_ICONS.find(a => a.id === iconId);
+    const inner = icon.svg.replace(/<svg[^>]*>/, "").replace("</svg>", "");
+    return (
+      <div style={{ width: size, height: size, borderRadius: "50%", background: T.ink, border: `1.5px solid ${T.groove}`, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", flexShrink: 0 }}
+        dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 40 40" width="${Math.round(size * 0.7)}" height="${Math.round(size * 0.7)}" xmlns="http://www.w3.org/2000/svg">${inner}</svg>` }} />
+    );
+  }
+  // Fallback: old emoji or default
+  const emoji = profile?.avatar_emoji || "🎵";
+  return (
+    <div style={{ width: size, height: size, borderRadius: "50%", background: T.cream, border: `1.5px solid ${T.groove}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: size * 0.5, flexShrink: 0 }}>
+      {emoji}
+    </div>
+  );
+};
+
 // ─────────────────────────────────────────────────────────────────────────────
-// MEDIA STRIP
+// MEDIA STRIP — photos only
 // ─────────────────────────────────────────────────────────────────────────────
 const MediaStrip = ({ media, onAdd, onRemove }) => {
   const ref = useRef();
   const handleFiles = async (files) => {
     for (const f of Array.from(files)) {
-      if (!f.type.startsWith("image/") && !f.type.startsWith("video/")) continue;
+      if (!f.type.startsWith("image/")) continue;
       const data = await readFile(f);
       onAdd && onAdd(data);
     }
@@ -134,9 +171,7 @@ const MediaStrip = ({ media, onAdd, onRemove }) => {
     <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginTop: "10px" }}>
       {(media || []).map((item, i) => (
         <div key={i} style={{ position: "relative", width: 72, height: 72 }}>
-          {item.type === "video"
-            ? <video src={item.url} style={{ width: 72, height: 72, objectFit: "cover", borderRadius: "3px", border: `1px solid ${T.groove}` }} />
-            : <img src={item.url} alt="" style={{ width: 72, height: 72, objectFit: "cover", borderRadius: "3px", border: `1px solid ${T.groove}` }} />}
+          <img src={item.url} alt="" style={{ width: 72, height: 72, objectFit: "cover", borderRadius: "3px", border: `1px solid ${T.groove}` }} />
           {onRemove && (
             <button onClick={() => onRemove(i)} style={{ position: "absolute", top: 2, right: 2, background: "rgba(26,16,8,.7)", border: "none", borderRadius: "50%", color: T.cream, width: 18, height: 18, cursor: "pointer", fontSize: "10px", lineHeight: "18px", padding: 0 }}>✕</button>
           )}
@@ -147,8 +182,8 @@ const MediaStrip = ({ media, onAdd, onRemove }) => {
           style={{ width: 72, height: 72, border: `1.5px dashed ${T.groove}`, borderRadius: "3px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", cursor: "pointer", color: T.groove, fontSize: "10px", gap: "3px", transition: "all .2s" }}
           onMouseEnter={e => { e.currentTarget.style.borderColor = T.accent; e.currentTarget.style.color = T.accent; }}
           onMouseLeave={e => { e.currentTarget.style.borderColor = T.groove; e.currentTarget.style.color = T.groove; }}>
-          <span style={{ fontSize: "20px" }}>♪</span><span>Add</span>
-          <input ref={ref} type="file" accept="image/*,video/*" multiple style={{ display: "none" }} onChange={e => handleFiles(e.target.files)} />
+          <span style={{ fontSize: "20px" }}>♪</span><span>Add Photo</span>
+          <input ref={ref} type="file" accept="image/*" multiple style={{ display: "none" }} onChange={e => handleFiles(e.target.files)} />
         </div>
       )}
     </div>
@@ -346,7 +381,7 @@ const ConcertModal = ({ concert, onClose, onSave }) => {
           <div><label style={S.label}>♪ Note Rating</label><NoteRating v={f.rating} onChange={v => set("rating", v)} size="lg" /></div>
           <div><label style={S.label}>Your Review</label><textarea style={{ ...S.input, minHeight: "88px", resize: "vertical" }} value={f.review} onChange={e => set("review", e.target.value)} placeholder="What made this show unforgettable?" /></div>
           <div><label style={S.label}>Setlist — one song per line</label><textarea style={{ ...S.input, minHeight: "96px", resize: "vertical", fontSize: "13px" }} value={setlistInput} onChange={e => setSetlistInput(e.target.value)} placeholder={"Opening Song\nFan Favourite\nClosing Number"} /></div>
-          <div><label style={S.label}>Photos & Videos</label><MediaStrip media={f.media} onAdd={addMedia} onRemove={removeMedia} /></div>
+          <div><label style={S.label}>Photos</label><MediaStrip media={f.media} onAdd={addMedia} onRemove={removeMedia} /></div>
         </div>
         <div style={{ display: "flex", gap: "10px", marginTop: "24px", borderTop: `1px solid ${T.groove}`, paddingTop: "20px" }}>
           <button onClick={onClose} style={{ flex: 1, padding: "11px", background: "transparent", border: `1.5px solid ${T.groove}`, borderRadius: "3px", color: T.stamp, cursor: "pointer", fontSize: "13px", fontFamily: "'Outfit', sans-serif" }}><Sym>■</Sym> Cancel</button>
@@ -438,7 +473,7 @@ const SleeveModal = ({ concert, onClose, isOwn, onEdit }) => {
 // ─────────────────────────────────────────────────────────────────────────────
 // TICKET STUB
 // ─────────────────────────────────────────────────────────────────────────────
-const TicketStub = ({ concert, onEdit, onDelete, onOpen, showOwner, ownerName, ownerHandle, ownerAvatar, isEncore, onOwnerClick }) => {
+const TicketStub = ({ concert, onEdit, onDelete, onOpen, showOwner, ownerName, ownerHandle, ownerProfile, isEncore, onOwnerClick }) => {
   const [hov, setHov] = useState(false);
   const { month, day, year } = fmtDate(concert.date);
   const mediaCount = concert.media?.length || 0;
@@ -467,8 +502,9 @@ const TicketStub = ({ concert, onEdit, onDelete, onOpen, showOwner, ownerName, o
           {showOwner && (
             <div
               onClick={onOwnerClick ? (e) => { e.stopPropagation(); onOwnerClick(); } : undefined}
-              style={{ color: T.stamp, fontSize: "10px", fontFamily: "'Outfit', sans-serif", marginBottom: "4px", cursor: onOwnerClick ? "pointer" : "default", display: "inline-flex", alignItems: "center", gap: "4px" }}>
-              {ownerAvatar} <span style={{ fontWeight: "700" }}>{ownerName}</span>
+              style={{ color: T.stamp, fontSize: "10px", fontFamily: "'Outfit', sans-serif", marginBottom: "4px", cursor: onOwnerClick ? "pointer" : "default", display: "inline-flex", alignItems: "center", gap: "5px" }}>
+              <AvatarImg profile={ownerProfile} size={18} />
+              <span style={{ fontWeight: "700" }}>{ownerName}</span>
               <span style={{ color: T.grooveLt }}>{ownerHandle}</span>
               {onOwnerClick && <span style={{ color: T.accent, fontSize: "9px" }}>↗</span>}
             </div>
@@ -554,7 +590,7 @@ const ProfileModal = ({ user, onClose, onToggleFollow }) => {
         <div style={{ background: T.ink, padding: "28px 32px" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
             <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
-              <div style={{ fontSize: "34px", background: "rgba(255,255,255,.07)", width: 54, height: 54, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center" }}>{user.avatar_emoji || "🎵"}</div>
+              <AvatarImg profile={user} size={54} />
               <div>
                 <div style={{ color: T.accent, fontSize: "10px", letterSpacing: "3px", textTransform: "uppercase", fontFamily: "'Outfit', sans-serif", marginBottom: "4px" }}>♪ PUBLIC PROFILE</div>
                 <div style={{ color: T.title, fontFamily: "'Fraunces', serif", fontSize: "22px", fontWeight: "700" }}>{user.display_name || user.username}</div>
@@ -611,7 +647,7 @@ const FindUsersModal = ({ onClose, users, onToggleFollow, onViewProfile }) => {
           <div style={{ marginTop: "14px", display: "flex", flexDirection: "column", gap: "8px" }}>
             {results.map(u => (
               <div key={u.id} style={{ display: "flex", alignItems: "center", gap: "12px", padding: "12px 14px", background: T.paper, border: `1px solid ${T.groove}`, borderRadius: "3px" }}>
-                <span style={{ fontSize: "22px" }}>{u.avatar_emoji || "🎵"}</span>
+                <AvatarImg profile={u} size={36} />
                 <div style={{ flex: 1, cursor: "pointer" }} onClick={() => { onViewProfile(u); onClose(); }}>
                   <div style={{ color: T.ink, fontFamily: "'Fraunces', serif", fontSize: "15px", fontWeight: "700" }}>{u.display_name || u.username}</div>
                   <div style={{ color: T.stamp, fontSize: "11px", fontFamily: "'Outfit', sans-serif" }}>@{u.username} · <span style={{ color: T.accent }}><Sym>▶</Sym> View</span></div>
@@ -676,9 +712,7 @@ const GlobalSearchPanel = ({ query, allConcerts, allUsers, onOpenConcert, onOpen
                   {/* Avatar + name — clickable to open profile */}
                   <div style={{ display: "flex", alignItems: "center", gap: "10px", flex: 1, cursor: "pointer" }}
                     onClick={() => { onOpenProfile(u); onClose(); }}>
-                    <div style={{ fontSize: "22px", background: T.paper, border: `1px solid ${T.groove}`, borderRadius: "50%", width: 36, height: 36, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                      {u.avatar_emoji || "🎵"}
-                    </div>
+                    <AvatarImg profile={u} size={36} />
                     <div>
                       <div style={{ color: T.ink, fontFamily: "'Fraunces', serif", fontSize: "15px", fontWeight: "700", lineHeight: 1.2 }}>{u.display_name || u.username}</div>
                       <div style={{ color: T.stamp, fontSize: "11px", fontFamily: "'Outfit', sans-serif" }}>
@@ -812,6 +846,325 @@ const Footer = ({ onPrivacy, onTerms }) => (
 );
 
 // ─────────────────────────────────────────────────────────────────────────────
+// EDIT PROFILE MODAL
+// ─────────────────────────────────────────────────────────────────────────────
+const EditProfileModal = ({ profile, onClose, onSave }) => {
+  const [displayName, setDisplayName] = useState(profile?.display_name || "");
+  const [username, setUsername]       = useState(profile?.username || "");
+  const [avatarType, setAvatarType]   = useState(profile?.avatar_url ? "upload" : "icon");
+  const [selectedIcon, setSelectedIcon] = useState(profile?.avatar_emoji || "vinyl");
+  const [uploadedPhoto, setUploadedPhoto] = useState(profile?.avatar_url || null);
+  const [saving, setSaving]           = useState(false);
+  const [error, setError]             = useState("");
+  const photoRef                      = useRef();
+
+  // Detect if current avatar_emoji is actually an icon id or an old emoji
+  const currentIsIcon = AVATAR_ICONS.some(a => a.id === selectedIcon);
+
+  const handlePhoto = (e) => {
+    const f = e.target.files[0];
+    if (!f || !f.type.startsWith("image/")) return;
+    const r = new FileReader();
+    r.onload = (ev) => { setUploadedPhoto(ev.target.result); setAvatarType("upload"); };
+    r.readAsDataURL(f);
+  };
+
+  const handleSave = async () => {
+    setError(""); setSaving(true);
+    try {
+      if (!username.trim()) throw new Error("Username is required.");
+      // Check username uniqueness (exclude self)
+      const { data: existing } = await supabase.from("profiles").select("id").eq("username", username.trim().toLowerCase()).neq("id", profile.id).single();
+      if (existing) throw new Error("That username is already taken.");
+      const updates = {
+        username: username.trim().toLowerCase(),
+        display_name: displayName.trim() || username.trim(),
+        avatar_emoji: avatarType === "icon" ? selectedIcon : "upload",
+        avatar_url: avatarType === "upload" ? uploadedPhoto : null,
+      };
+      const { error: e } = await supabase.from("profiles").update(updates).eq("id", profile.id);
+      if (e) throw e;
+      onSave({ ...profile, ...updates });
+      onClose();
+    } catch (e) { setError(e.message); }
+    setSaving(false);
+  };
+
+  const AvatarPreview = ({ size = 56 }) => {
+    if (avatarType === "upload" && uploadedPhoto) {
+      return <img src={uploadedPhoto} alt="avatar" style={{ width: size, height: size, borderRadius: "50%", objectFit: "cover", border: `2px solid ${T.accent}` }} />;
+    }
+    const icon = AVATAR_ICONS.find(a => a.id === selectedIcon) || AVATAR_ICONS[0];
+    return (
+      <div style={{ width: size, height: size, borderRadius: "50%", background: T.ink, border: `2px solid ${T.accent}`, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}
+        dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 40 40" width="${size - 12}" height="${size - 12}" xmlns="http://www.w3.org/2000/svg">${icon.svg.replace(/<svg[^>]*>/, "").replace("</svg>", "")}</svg>` }} />
+    );
+  };
+
+  return (
+    <div style={{ position: "fixed", inset: 0, background: "rgba(26,16,8,.78)", zIndex: 300, display: "flex", alignItems: "center", justifyContent: "center", padding: "20px", backdropFilter: "blur(4px)" }} onClick={onClose}>
+      <div onClick={e => e.stopPropagation()}
+        style={{ background: T.cream, border: `2px solid ${T.ink}`, borderRadius: "2px", width: "100%", maxWidth: "500px", maxHeight: "90vh", overflowY: "auto", boxShadow: `6px 6px 0 ${T.groove}` }}>
+
+        {/* Header */}
+        <div style={{ background: T.ink, padding: "20px 24px", display: "flex", justifyContent: "space-between", alignItems: "center", position: "sticky", top: 0, zIndex: 1 }}>
+          <div>
+            <div style={{ color: T.accent, fontSize: "10px", letterSpacing: "3px", textTransform: "uppercase", fontFamily: "'Outfit', sans-serif", marginBottom: "3px" }}>♪ Profile</div>
+            <h2 style={{ color: T.title, fontFamily: "'Fraunces', serif", fontSize: "20px", margin: 0 }}>Edit Your Profile</h2>
+          </div>
+          <button onClick={onClose} style={{ background: "none", border: "none", color: T.groove, cursor: "pointer", fontSize: "18px" }}>✕</button>
+        </div>
+
+        <div style={{ padding: "24px" }}>
+          {/* Avatar preview + upload */}
+          <div style={{ display: "flex", alignItems: "center", gap: "20px", marginBottom: "24px", padding: "16px", background: T.paper, border: `1.5px solid ${T.groove}`, borderRadius: "3px" }}>
+            <AvatarPreview size={64} />
+            <div>
+              <div style={{ color: T.stamp, fontSize: "10px", letterSpacing: "2px", textTransform: "uppercase", fontFamily: "'Outfit', sans-serif", marginBottom: "8px" }}>Your Avatar</div>
+              <button onClick={() => photoRef.current.click()}
+                style={{ background: T.ink, border: "none", color: T.cream, borderRadius: "2px", padding: "7px 14px", cursor: "pointer", fontSize: "11px", fontWeight: "700", fontFamily: "'Outfit', sans-serif", letterSpacing: "1px", marginRight: "8px" }}>
+                ↑ Upload Photo
+              </button>
+              {uploadedPhoto && (
+                <button onClick={() => { setUploadedPhoto(null); setAvatarType("icon"); }}
+                  style={{ background: "transparent", border: `1px solid ${T.groove}`, color: T.stamp, borderRadius: "2px", padding: "7px 12px", cursor: "pointer", fontSize: "11px", fontFamily: "'Outfit', sans-serif" }}>
+                  Remove
+                </button>
+              )}
+              <input ref={photoRef} type="file" accept="image/*" style={{ display: "none" }} onChange={handlePhoto} />
+            </div>
+          </div>
+
+          {/* Icon picker */}
+          <div style={{ marginBottom: "24px" }}>
+            <label style={S.label}>Or choose an icon</label>
+            <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+              {AVATAR_ICONS.map(icon => {
+                const isSelected = avatarType === "icon" && selectedIcon === icon.id;
+                return (
+                  <div key={icon.id} onClick={() => { setSelectedIcon(icon.id); setAvatarType("icon"); }}
+                    title={icon.label}
+                    style={{ width: 48, height: 48, borderRadius: "50%", background: isSelected ? T.ink : T.paper, border: `2px solid ${isSelected ? T.accent : T.groove}`, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "all .15s", overflow: "hidden" }}
+                    dangerouslySetInnerHTML={{ __html: `<svg viewBox="0 0 40 40" width="30" height="30" xmlns="http://www.w3.org/2000/svg">${icon.svg.replace(/<svg[^>]*>/, "").replace("</svg>", "")}</svg>` }}
+                  />
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Name fields */}
+          <div style={{ display: "grid", gap: "14px" }}>
+            <div>
+              <label style={S.label}>Display Name</label>
+              <input style={S.input} value={displayName} onChange={e => setDisplayName(e.target.value)} placeholder="e.g. Maya Chen" />
+            </div>
+            <div>
+              <label style={S.label}>Username *</label>
+              <div style={{ position: "relative" }}>
+                <span style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", color: T.groove }}>@</span>
+                <input style={{ ...S.input, paddingLeft: "26px" }} value={username} onChange={e => setUsername(e.target.value.replace(/\s/g, ""))} placeholder="yourhandle" />
+              </div>
+            </div>
+          </div>
+
+          {error && (
+            <div style={{ marginTop: "14px", background: "#fde8e8", border: `1px solid ${T.red}`, borderRadius: "3px", padding: "10px 14px", color: T.red, fontSize: "12px", fontFamily: "'Outfit', sans-serif" }}>
+              {error}
+            </div>
+          )}
+
+          <div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
+            <button onClick={onClose} style={{ flex: 1, padding: "12px", background: "transparent", border: `1.5px solid ${T.groove}`, borderRadius: "3px", color: T.stamp, cursor: "pointer", fontSize: "12px", fontFamily: "'Outfit', sans-serif" }}>
+              Cancel
+            </button>
+            <button onClick={handleSave} disabled={saving}
+              style={{ flex: 2, padding: "12px", background: T.ink, border: "none", borderRadius: "3px", color: T.cream, cursor: saving ? "not-allowed" : "pointer", fontSize: "12px", fontWeight: "700", fontFamily: "'Fraunces', serif", opacity: saving ? 0.6 : 1, boxShadow: `3px 3px 0 ${T.groove}` }}>
+              {saving ? "Saving…" : "▶ Save Profile"}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// AUTH PANEL — inline form used on the dedicated login page
+// ─────────────────────────────────────────────────────────────────────────────
+const AuthPanel = ({ onAuth }) => {
+  const [mode, setMode]               = useState("login");
+  const [identifier, setIdentifier]   = useState("");
+  const [email, setEmail]             = useState("");
+  const [password, setPassword]       = useState("");
+  const [username, setUsername]       = useState("");
+  const [displayName, setDisplayName] = useState("");
+  const [error, setError]             = useState("");
+  const [loading, setLoading]         = useState(false);
+
+  const resolveEmail = async (input) => {
+    if (input.includes("@") && input.includes(".")) return input.trim();
+    const handle = input.replace(/^@/, "").trim().toLowerCase();
+    const { data } = await supabase.from("profiles").select("email").eq("username", handle).single();
+    if (!data?.email) throw new Error("No account found with that username.");
+    return data.email;
+  };
+
+  const handleSubmit = async () => {
+    setError(""); setLoading(true);
+    try {
+      if (mode === "signup") {
+        if (!username.trim()) throw new Error("Username is required.");
+        if (!email.trim())    throw new Error("Email is required.");
+        const { data: existing } = await supabase.from("profiles").select("id").eq("username", username.trim().toLowerCase()).single();
+        if (existing) throw new Error("That username is already taken.");
+        const { data, error: e } = await supabase.auth.signUp({ email: email.trim(), password });
+        if (e) throw e;
+        if (data.user) {
+          await supabase.from("profiles").insert({
+            id: data.user.id,
+            username: username.trim().toLowerCase(),
+            display_name: displayName.trim() || username.trim(),
+            avatar_emoji: "🎵",
+            email: email.trim(),
+          });
+          onAuth(data.user);
+        }
+      } else {
+        const resolvedEmail = await resolveEmail(identifier);
+        const { data, error: e } = await supabase.auth.signInWithPassword({ email: resolvedEmail, password });
+        if (e) throw e;
+        onAuth(data.user);
+      }
+    } catch (e) { setError(e.message || "Something went wrong."); }
+    setLoading(false);
+  };
+
+  return (
+    <div>
+      {/* Mode toggle */}
+      <div style={{ display: "flex", marginBottom: "32px", background: T.paper, borderRadius: "3px", padding: "3px", border: `1px solid ${T.groove}` }}>
+        {["login","signup"].map(m => (
+          <button key={m} onClick={() => { setMode(m); setError(""); }}
+            style={{ flex: 1, padding: "10px", background: mode === m ? T.ink : "transparent", color: mode === m ? T.cream : T.stamp, border: "none", borderRadius: "2px", cursor: "pointer", fontSize: "11px", fontWeight: "700", letterSpacing: "2px", textTransform: "uppercase", fontFamily: "'Outfit', sans-serif", transition: "all .2s" }}>
+            {m === "login" ? "▶ Sign In" : "♪ Join"}
+          </button>
+        ))}
+      </div>
+
+      <div style={{ marginBottom: "8px" }}>
+        <div style={{ color: T.ink, fontFamily: "'Fraunces', serif", fontSize: "26px", fontWeight: "700", marginBottom: "4px" }}>
+          {mode === "login" ? "Welcome back." : "Start your collection."}
+        </div>
+        <div style={{ color: T.stamp, fontSize: "13px", fontFamily: "'Outfit', sans-serif", fontStyle: "italic" }}>
+          {mode === "login" ? "Sign in with your email or @username." : "Create your account to press your first record."}
+        </div>
+      </div>
+
+      <div style={{ display: "grid", gap: "14px", marginTop: "24px" }}>
+        {mode === "signup" ? (
+          <>
+            <div>
+              <label style={S.label}>Username *</label>
+              <div style={{ position: "relative" }}>
+                <span style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", color: T.groove, fontSize: "14px" }}>@</span>
+                <input style={{ ...S.input, paddingLeft: "26px" }} value={username} onChange={e => setUsername(e.target.value.replace(/\s/g, ""))} placeholder="yourhandle" />
+              </div>
+              <div style={{ color: T.groove, fontSize: "10px", fontFamily: "'Outfit', sans-serif", marginTop: "4px" }}>Searchable by other users. Lowercase, no spaces.</div>
+            </div>
+            <div>
+              <label style={S.label}>Display Name</label>
+              <input style={S.input} value={displayName} onChange={e => setDisplayName(e.target.value)} placeholder="e.g. Maya Chen (optional)" />
+            </div>
+            <div>
+              <label style={S.label}>Email *</label>
+              <input type="email" style={S.input} value={email} onChange={e => setEmail(e.target.value)} placeholder="you@example.com" />
+            </div>
+          </>
+        ) : (
+          <div>
+            <label style={S.label}>Email or @Username</label>
+            <input style={S.input} value={identifier} onChange={e => setIdentifier(e.target.value)} placeholder="you@example.com or @handle" autoFocus />
+          </div>
+        )}
+        <div>
+          <label style={S.label}>Password</label>
+          <input type="password" style={S.input} value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" onKeyDown={e => e.key === "Enter" && handleSubmit()} />
+        </div>
+        {error && (
+          <div style={{ background: "#fde8e8", border: `1px solid ${T.red}`, borderRadius: "3px", padding: "10px 14px", color: T.red, fontSize: "12px", fontFamily: "'Outfit', sans-serif" }}>
+            {error}
+          </div>
+        )}
+      </div>
+
+      <button onClick={handleSubmit} disabled={loading}
+        style={{ width: "100%", marginTop: "20px", padding: "14px", background: T.ink, border: "none", borderRadius: "3px", color: T.cream, cursor: loading ? "not-allowed" : "pointer", fontSize: "13px", fontWeight: "700", fontFamily: "'Fraunces', serif", letterSpacing: "0.5px", opacity: loading ? 0.6 : 1, boxShadow: `3px 3px 0 ${T.groove}`, transition: "all .15s" }}
+        onMouseEnter={e => { if (!loading) { e.currentTarget.style.transform = "translate(-1px,-1px)"; e.currentTarget.style.boxShadow = `4px 4px 0 ${T.groove}`; } }}
+        onMouseLeave={e => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = `3px 3px 0 ${T.groove}`; }}>
+        {loading ? "♪ Loading…" : mode === "login" ? "▶ Play My Collection" : "▶ Press My First Record"}
+      </button>
+    </div>
+  );
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// FOLLOWING MODAL — people you follow, with profile drill-down
+// ─────────────────────────────────────────────────────────────────────────────
+const FollowingModal = ({ users, onClose, onViewProfile, onToggleFollow }) => {
+  const following = users.filter(u => u.following);
+  return (
+    <div style={{ position: "fixed", inset: 0, background: "rgba(26,16,8,.78)", zIndex: 300, display: "flex", alignItems: "center", justifyContent: "center", padding: "20px", backdropFilter: "blur(4px)" }} onClick={onClose}>
+      <div onClick={e => e.stopPropagation()}
+        style={{ background: T.cream, border: `2px solid ${T.ink}`, borderRadius: "2px", width: "100%", maxWidth: "480px", maxHeight: "80vh", overflowY: "auto", boxShadow: `6px 6px 0 ${T.groove}` }}>
+
+        {/* Header */}
+        <div style={{ background: T.ink, padding: "24px 28px", display: "flex", justifyContent: "space-between", alignItems: "center", position: "sticky", top: 0, zIndex: 1 }}>
+          <div>
+            <div style={{ color: T.accent, fontSize: "10px", letterSpacing: "3px", textTransform: "uppercase", fontFamily: "'Outfit', sans-serif", marginBottom: "4px" }}>♫ Following</div>
+            <h2 style={{ color: T.title, fontFamily: "'Fraunces', serif", fontSize: "20px", margin: 0 }}>
+              {following.length} Listener{following.length !== 1 ? "s" : ""} You Follow
+            </h2>
+          </div>
+          <button onClick={onClose} style={{ background: "none", border: "none", color: T.groove, cursor: "pointer" }}><Sym>■</Sym></button>
+        </div>
+
+        {/* List */}
+        <div style={{ padding: "12px 16px", display: "flex", flexDirection: "column", gap: "8px" }}>
+          {following.length === 0 ? (
+            <div style={{ textAlign: "center", padding: "40px 20px", color: T.groove, fontFamily: "'Outfit', sans-serif", fontSize: "13px", fontStyle: "italic" }}>
+              You're not following anyone yet.<br />
+              <span style={{ fontSize: "12px", color: T.grooveLt }}>Head to A-Side to find listeners.</span>
+            </div>
+          ) : (
+            following.map(u => (
+              <div key={u.id}
+                style={{ background: T.paper, border: `1.5px solid ${T.groove}`, borderRadius: "3px", padding: "14px 16px", display: "flex", alignItems: "center", gap: "12px", boxShadow: `2px 2px 0 ${T.grooveLt}` }}>
+                <div onClick={() => { onViewProfile(u); onClose(); }} style={{ cursor: "pointer" }}>
+                  <AvatarImg profile={u} size={42} />
+                </div>
+                <div style={{ flex: 1, cursor: "pointer", minWidth: 0 }} onClick={() => { onViewProfile(u); onClose(); }}>
+                  <div style={{ color: T.ink, fontFamily: "'Fraunces', serif", fontSize: "16px", fontWeight: "700", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                    {u.display_name || u.username}
+                  </div>
+                  <div style={{ color: T.stamp, fontSize: "11px", fontFamily: "'Outfit', sans-serif" }}>
+                    @{u.username} · {u.concerts?.length || 0} shows ·{" "}
+                    <span style={{ color: T.accent }}><Sym>▶</Sym> View profile</span>
+                  </div>
+                </div>
+                <button onClick={() => onToggleFollow(u.id)}
+                  style={{ background: "transparent", border: `1.5px solid ${T.groove}`, color: T.stamp, borderRadius: "2px", padding: "6px 12px", cursor: "pointer", fontSize: "10px", fontWeight: "700", fontFamily: "'Outfit', sans-serif", letterSpacing: "1px", whiteSpace: "nowrap", transition: "all .2s", flexShrink: 0 }}>
+                  <Sym>■</Sym> Unfollow
+                </button>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
 // ROOT APP
 // ─────────────────────────────────────────────────────────────────────────────
 export default function App() {
@@ -820,6 +1173,8 @@ export default function App() {
   const [profile, setProfile]         = useState(null);   // profiles row
   const [authLoading, setAuthLoading] = useState(true);
   const [showAuth, setShowAuth]       = useState(false);
+  const [showFollowing, setShowFollowing] = useState(false);
+  const [showEditProfile, setShowEditProfile] = useState(false);
 
   // ── App state ──
   const [tab, setTab]                 = useState("upcoming");
@@ -1011,10 +1366,87 @@ export default function App() {
   });
 
   if (authLoading) return (
-    <div style={{ minHeight: "100vh", background: T.bg, display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: "16px" }}>
+    <div style={{ minHeight: "100vh", background: T.ink, display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: "16px" }}>
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,900;1,9..144,400&family=Outfit:wght@300;400;700&display=swap'); @keyframes spin { to { transform: rotate(360deg); } }`}</style>
-      <div style={{ color: T.title, fontFamily: "'Fraunces', serif", fontSize: "42px", fontWeight: "900" }}>Record</div>
+      <div style={{ color: T.title, fontFamily: "'Fraunces', serif", fontSize: "52px", fontWeight: "900", letterSpacing: "-2px" }}>Record</div>
       <Spinner />
+    </div>
+  );
+
+  // ── DEDICATED LOGIN / SIGNUP PAGE (shown when not logged in) ──
+  if (!authUser) return (
+    <div style={{ minHeight: "100vh", background: T.ink, display: "flex", flexDirection: "column" }}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,900;1,9..144,300;1,9..144,400&family=Outfit:wght@300;400;500;700&display=swap');
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: ${T.ink}; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        input:focus { border-color: ${T.accent} !important; }
+      `}</style>
+
+      <div style={{ flex: 1, display: "flex", alignItems: "stretch", minHeight: "100vh" }}>
+
+        {/* ── LEFT PANEL — branding ── */}
+        <div style={{ flex: 1, background: T.ink, padding: "60px 56px", display: "flex", flexDirection: "column", justifyContent: "space-between", position: "relative", overflow: "hidden" }}>
+          {/* Vinyl ring decorations */}
+          {[420, 340, 260, 180, 100].map((size, i) => (
+            <div key={i} style={{ position: "absolute", right: -(size / 3), bottom: -(size / 3), width: size, height: size, borderRadius: "50%", border: `1px solid rgba(126,200,216,${0.03 + i * 0.025})`, pointerEvents: "none" }} />
+          ))}
+          {/* Groove lines */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "5px", marginBottom: "auto" }}>
+            {[0.05, 0.09, 0.06, 0.04].map((op, i) => (
+              <div key={i} style={{ height: "1px", background: `rgba(126,200,216,${op})` }} />
+            ))}
+          </div>
+
+          <div style={{ marginTop: "48px" }}>
+            <div style={{ color: T.accent, fontSize: "10px", letterSpacing: "5px", textTransform: "uppercase", fontFamily: "'Outfit', sans-serif", marginBottom: "20px" }}>
+              ♪ ♫ &nbsp; {APP_SUBTITLE}
+            </div>
+            <h1 style={{ fontFamily: "'Fraunces', serif", fontSize: "clamp(64px, 10vw, 96px)", fontWeight: "900", letterSpacing: "-4px", lineHeight: 0.88, color: T.title }}>
+              {APP_NAME}
+            </h1>
+            <p style={{ color: T.groove, fontSize: "16px", marginTop: "20px", fontStyle: "italic", fontFamily: "'Outfit', sans-serif", lineHeight: 1.6, maxWidth: "340px" }}>
+              {APP_TAGLINE}
+            </p>
+          </div>
+
+          {/* Feature list */}
+          <div style={{ marginTop: "56px", display: "flex", flexDirection: "column", gap: "16px" }}>
+            {[
+              { icon: "♪", text: "Log every concert you've ever been to" },
+              { icon: "★", text: "Build your all-time Encore List" },
+              { icon: "♫", text: "Follow friends & see what they've seen" },
+              { icon: "▶", text: "Rate, review & log full setlists" },
+            ].map(f => (
+              <div key={f.icon} style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+                <span style={{ color: T.accent, fontSize: "16px", width: "20px", textAlign: "center" }}>{f.icon}</span>
+                <span style={{ color: T.grooveLt, fontFamily: "'Outfit', sans-serif", fontSize: "13px" }}>{f.text}</span>
+              </div>
+            ))}
+          </div>
+
+          <div style={{ marginTop: "48px", color: T.stamp, fontSize: "11px", fontFamily: "'Outfit', sans-serif" }}>
+            © {new Date().getFullYear()} {APP_NAME} · {CONTACT_EMAIL}
+          </div>
+        </div>
+
+        {/* ── RIGHT PANEL — auth form ── */}
+        <div style={{ width: "460px", minWidth: "360px", background: T.cream, display: "flex", flexDirection: "column", justifyContent: "center", padding: "60px 48px", position: "relative" }}>
+          {/* Top accent bar */}
+          <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "4px", background: T.accent }} />
+
+          <AuthPanel onAuth={(u) => setAuthUser(u)} />
+
+          <div style={{ marginTop: "32px", paddingTop: "24px", borderTop: `1px solid ${T.groove}`, display: "flex", gap: "16px", justifyContent: "center" }}>
+            <button onClick={() => setShowPrivacy(true)} style={{ background: "none", border: "none", color: T.groove, cursor: "pointer", fontSize: "11px", fontFamily: "'Outfit', sans-serif", textDecoration: "underline" }}>Privacy Policy</button>
+            <button onClick={() => setShowTerms(true)} style={{ background: "none", border: "none", color: T.groove, cursor: "pointer", fontSize: "11px", fontFamily: "'Outfit', sans-serif", textDecoration: "underline" }}>Terms of Service</button>
+          </div>
+        </div>
+      </div>
+
+      {showPrivacy && <LegalModal title="Privacy Policy" sections={PRIVACY_SECTIONS} onClose={() => setShowPrivacy(false)} />}
+      {showTerms   && <LegalModal title="Terms of Service" sections={TERMS_SECTIONS}  onClose={() => setShowTerms(false)} />}
     </div>
   );
 
@@ -1053,24 +1485,18 @@ export default function App() {
               <p style={{ color: T.groove, fontSize: "14px", marginTop: "12px", fontStyle: "italic", fontFamily: "'Outfit', sans-serif" }}>{APP_TAGLINE}</p>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: "10px", alignItems: "flex-end" }}>
-              {authUser ? (
-                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                  <div style={{ color: T.groove, fontSize: "12px", fontFamily: "'Outfit', sans-serif" }}>
-                    {profile?.avatar_emoji || "🎵"} {profile?.display_name || profile?.username || authUser.email}
-                  </div>
-                  <button onClick={handleSignOut}
-                    style={{ background: "transparent", border: `1px solid ${T.groove}`, color: T.groove, borderRadius: "2px", padding: "6px 12px", cursor: "pointer", fontSize: "10px", letterSpacing: "1.5px", textTransform: "uppercase", fontFamily: "'Outfit', sans-serif" }}>
-                    Sign Out
-                  </button>
+              <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                <AvatarImg profile={profile} size={28} />
+                <div style={{ color: T.groove, fontSize: "12px", fontFamily: "'Outfit', sans-serif" }}>
+                  {profile?.display_name || profile?.username || authUser.email}
                 </div>
-              ) : (
-                <button onClick={() => setShowAuth(true)}
-                  style={{ background: "transparent", border: `1.5px solid ${T.accent}`, color: T.accent, borderRadius: "2px", padding: "8px 16px", cursor: "pointer", fontSize: "10px", letterSpacing: "2px", textTransform: "uppercase", fontFamily: "'Outfit', sans-serif" }}>
-                  ♪ Sign In
+                <button onClick={handleSignOut}
+                  style={{ background: "transparent", border: `1px solid ${T.groove}`, color: T.groove, borderRadius: "2px", padding: "6px 12px", cursor: "pointer", fontSize: "10px", letterSpacing: "1.5px", textTransform: "uppercase", fontFamily: "'Outfit', sans-serif" }}>
+                  Sign Out
                 </button>
-              )}
+              </div>
               <button
-                onClick={() => authUser ? setModal("new") : setShowAuth(true)}
+                onClick={() => setModal("new")}
                 style={{ background: T.accent, color: T.ink, border: "none", borderRadius: "2px", padding: "14px 26px", fontWeight: "700", cursor: "pointer", fontSize: "11px", letterSpacing: "2.5px", textTransform: "uppercase", fontFamily: "'Outfit', sans-serif", boxShadow: `3px 3px 0 ${T.accentDk}`, whiteSpace: "nowrap", transition: "all .15s" }}
                 onMouseEnter={e => { e.currentTarget.style.transform = "translate(-1px,-1px)"; e.currentTarget.style.boxShadow = `4px 4px 0 ${T.accentDk}`; }}
                 onMouseLeave={e => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = `3px 3px 0 ${T.accentDk}`; }}>
@@ -1114,7 +1540,7 @@ export default function App() {
             {[
               { l: "Shows Pressed",       v: concerts.length,                        onClick: () => setTab("b-side") },
               { l: "Avg Rating",          v: avgRating,                              onClick: null },
-              { l: "Listeners Following", v: users.filter(u => u.following).length,  onClick: () => setTab("a-side") },
+              { l: "Listeners Following", v: users.filter(u => u.following).length,  onClick: () => setShowFollowing(true) },
             ].map(s => (
               <div key={s.l} onClick={s.onClick || undefined}
                 style={{ cursor: s.onClick ? "pointer" : "default", transition: "opacity .15s" }}
@@ -1191,7 +1617,7 @@ export default function App() {
                           showOwner
                           ownerName={c._owner.display_name || c._owner.username}
                           ownerHandle={`@${c._owner.username}`}
-                          ownerAvatar={c._owner.avatar_emoji || "🎵"}
+                          ownerProfile={c._owner}
                           onOwnerClick={() => setProfileView(c._owner)}
                         />
                       </div>
@@ -1225,9 +1651,9 @@ export default function App() {
                 {users.map(u => (
                   <div key={u.id}
                     style={{ background: T.paper, border: `1.5px solid ${T.groove}`, borderRadius: "3px", padding: "14px 18px", display: "flex", alignItems: "center", gap: "14px", boxShadow: `2px 2px 0 ${T.grooveLt}` }}>
-                    <div style={{ fontSize: "26px", width: 42, height: 42, background: T.cream, border: `1px solid ${T.groove}`, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}
-                      onClick={() => setProfileView(u)}>
-                      {u.avatar_emoji || "🎵"}
+                    <div onClick={() => setProfileView(u)}
+                      style={{ flexShrink: 0, cursor: "pointer" }}>
+                      <AvatarImg profile={u} size={44} />
                     </div>
                     <div style={{ flex: 1, cursor: "pointer" }} onClick={() => setProfileView(u)}>
                       <div style={{ color: T.ink, fontFamily: "'Fraunces', serif", fontSize: "16px", fontWeight: "700" }}>{u.display_name || u.username}</div>
@@ -1250,29 +1676,21 @@ export default function App() {
         {/* ── B-SIDE (your profile / logs) ── */}
         {tab === "b-side" && (
           <>
-            {!authUser ? (
-              <div style={{ textAlign: "center", padding: "80px 20px" }}>
-                <div style={{ fontSize: "52px", color: T.groove, marginBottom: "16px" }}>♪</div>
-                <div style={{ fontFamily: "'Fraunces', serif", fontSize: "22px", color: T.groove, marginBottom: "8px" }}>Your collection is waiting.</div>
-                <div style={{ fontSize: "13px", color: T.grooveLt, fontStyle: "italic", marginBottom: "24px" }}>Sign in or create an account to start pressing records.</div>
-                <button onClick={() => setShowAuth(true)}
-                  style={{ background: T.accent, color: T.ink, border: "none", borderRadius: "2px", padding: "14px 28px", fontWeight: "700", cursor: "pointer", fontSize: "12px", letterSpacing: "2px", textTransform: "uppercase", fontFamily: "'Outfit', sans-serif" }}>
-                  ▶ Get Started
-                </button>
-              </div>
-            ) : (
-              <>
                 {/* Profile header */}
                 <div style={{ background: T.paper, border: `2px solid ${T.inkLight}`, borderRadius: "4px", padding: "24px", marginBottom: "28px" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-                    <div style={{ fontSize: "36px", background: T.cream, border: `2px solid ${T.groove}`, borderRadius: "50%", width: 60, height: 60, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                      {profile?.avatar_emoji || "🎵"}
-                    </div>
-                    <div>
+                    <AvatarImg profile={profile} size={60} />
+                    <div style={{ flex: 1 }}>
                       <div style={{ color: T.accent, fontSize: "10px", letterSpacing: "3px", textTransform: "uppercase", fontFamily: "'Outfit', sans-serif", marginBottom: "3px" }}>♪ YOUR SIDE</div>
                       <div style={{ fontFamily: "'Fraunces', serif", fontSize: "22px", color: T.ink, fontWeight: "700" }}>{profile?.display_name || profile?.username}</div>
                       <div style={{ color: T.stamp, fontSize: "11px", fontFamily: "'Outfit', sans-serif" }}>@{profile?.username} · {concerts.length} shows pressed</div>
                     </div>
+                    <button onClick={() => setShowEditProfile(true)}
+                      style={{ background: "transparent", border: `1.5px solid ${T.groove}`, color: T.stamp, borderRadius: "2px", padding: "7px 14px", cursor: "pointer", fontSize: "10px", fontWeight: "700", fontFamily: "'Outfit', sans-serif", letterSpacing: "1.5px", textTransform: "uppercase", whiteSpace: "nowrap", transition: "all .2s" }}
+                      onMouseEnter={e => { e.currentTarget.style.borderColor = T.accent; e.currentTarget.style.color = T.accent; }}
+                      onMouseLeave={e => { e.currentTarget.style.borderColor = T.groove; e.currentTarget.style.color = T.stamp; }}>
+                      ✎ Edit Profile
+                    </button>
                   </div>
                 </div>
 
@@ -1348,11 +1766,12 @@ export default function App() {
       <Footer onPrivacy={() => setShowPrivacy(true)} onTerms={() => setShowTerms(true)} />
 
       {/* ── MODALS ── */}
-      {showAuth     && <AuthModal onClose={() => setShowAuth(false)} onAuth={(u) => { setAuthUser(u); setShowAuth(false); }} />}
       {modal        && <ConcertModal concert={modal === "new" ? null : modal} onClose={() => setModal(null)} onSave={handleSave} />}
       {sleeve       && <SleeveModal concert={sleeve} onClose={() => setSleeve(null)} isOwn={authUser && !sleeve._owner} onEdit={(c) => { setSleeve(null); setModal(c); }} />}
       {profileView  && <ProfileModal user={profileView} onClose={() => setProfileView(null)} onToggleFollow={toggleFollow} />}
       {showFindUsers && <FindUsersModal onClose={() => setShowFindUsers(false)} users={users} onToggleFollow={toggleFollow} onViewProfile={(u) => { setProfileView(u); setShowFindUsers(false); }} />}
+      {showFollowing && <FollowingModal users={users} onClose={() => setShowFollowing(false)} onViewProfile={setProfileView} onToggleFollow={toggleFollow} />}
+      {showEditProfile && <EditProfileModal profile={profile} onClose={() => setShowEditProfile(false)} onSave={(updated) => setProfile(updated)} />}
       {showPrivacy  && <LegalModal title="Privacy Policy" sections={PRIVACY_SECTIONS} onClose={() => setShowPrivacy(false)} />}
       {showTerms    && <LegalModal title="Terms of Service" sections={TERMS_SECTIONS} onClose={() => setShowTerms(false)} />}
     </div>
