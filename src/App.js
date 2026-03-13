@@ -743,7 +743,7 @@ export default function App() {
 
           {/* Tabs */}
           <div style={{ display: "flex", gap: "8px", marginTop: "24px", flexWrap: "wrap" }}>
-            <button style={tabStyle("my")}     onClick={() => setTab("my")}}>     <Sym>▶</Sym> My Shows</button>
+            <button style={tabStyle("my")}     onClick={() => setTab("my")}>     <Sym>▶</Sym> My Shows</button>
             <button style={tabStyle("feed")}   onClick={() => setTab("feed")}>    ♪ The Listening Room</button>
             <button style={tabStyle("people")} onClick={() => setTab("people")}>  ♫ Listeners</button>
           </div>
